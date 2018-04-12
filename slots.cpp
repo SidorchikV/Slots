@@ -92,8 +92,7 @@ int main()
 	readFromFile(pathReels);
 	readWinTable(pathWinTable);
 
-	//Вывод матрицы выигр.
-	cout << "Матрица выигрышей:\n";
+	cout << "Win table:\n";
 	for (int i = 0; i < numOfFruit; i++)
 	{
 		copy(winTable[i].begin(), winTable[i].end(), ostream_iterator<double>(cout, " "));
@@ -106,7 +105,7 @@ int main()
 		numOfCombinations *= reelsLength[i];
 	}
 
-	// средний выигрыш случайных запусков
+	// average win of random starts
 	for (int i = 0; i < numOfCombinations; i++)
 	{
 		for (int j = 0; j < numOfReels; j++)
@@ -115,7 +114,7 @@ int main()
 		}
 		probScore += winTable[tempComb[0] - 1][check(tempComb) - 1];
 	}
-	// подсчет среднего выигрыша от всевозможных перестановок
+	//the calculation of the average gain from all possible permutations
 	make_permutation(0);
 
 	for (int i = 0; i < numOfReels; i++)
@@ -125,7 +124,7 @@ int main()
 			tableOfProb[i][(reelsValue[i][j] - 1)]++;
 		}
 	}
-	cout << "\nМатрица вероятностей:\n";
+	cout << "\nProbability table:\n";
 	for (int i = 0; i < numOfReels; i++)
 	{
 		for (int j = 0; j < numOfFruit; j++)
@@ -136,7 +135,7 @@ int main()
 		cout << endl;
 	}
 	cout << endl;
-	//вычисление мо выигрыша
+	//MO
 	for (int f = 0; f < numOfFruit; f++)
 	{
 		wins = winTable[f];
@@ -157,9 +156,9 @@ int main()
 		//cout << endl;
 	}
 
-	cout << "\nprobScore : " << (probScore) / (numOfCombinations) << endl;
-	cout << "\ntotalScore : " << (totalScore) / (numOfCombinations) << endl;
-	cout << "\ntheoreticalScore : " << theoreticalScore << endl << endl;
+	cout << "\nProbabilistic average win : " << (probScore) / (numOfCombinations) << endl;
+	cout << "\nReal average win : " << (totalScore) / (numOfCombinations) << endl;
+	cout << "\nTheoretical average win : " << theoreticalScore << endl << endl;
 	system("pause");
 	return 0;
 }
