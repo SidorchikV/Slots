@@ -1,62 +1,63 @@
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <iterator>
-#include <ctime>
+#include "slots.h"
 
-using namespace std;
-int numOfReels = 3;
-int numOfFruit = 4;
-vector<int> reelsLength(numOfReels);
-vector<vector<int>> reelsValue(numOfReels);
-vector<vector<double>> winTable(numOfFruit, vector<double>(numOfReels));
-vector<vector<double>> tableOfProb(numOfReels, vector<double>(numOfFruit, 0));
-vector<double> wins(numOfReels);
-vector<int> tempComb(numOfReels);
-string pathReels = "reels.txt";
-string pathWinTable = "winTable.txt";
-double totalScore = 0;
-double probScore = 0;
-double theoreticalScore = 0;
 
-void readFromFile(string path)
+
+  int numOfReels = 3;
+  int numOfFruit = 4;
+
+ vector<double> wins(numOfReels);
+ vector<int> tempComb(numOfReels);
+
+ vector<int> reelsLength(numOfReels);
+ vector<vector<int>> reelsValue(numOfReels);
+ vector<vector<double>> winTable(numOfFruit, vector<double>(numOfReels));
+ vector<vector<double>> tableOfProb(numOfReels, vector<double>(numOfFruit, 0));
+
+
+ double totalScore = 0;
+ double probScore = 0;
+ double theoreticalScore = 0;
+
+
+
+void readFromFile(string path, vector<int>& reelsLengthTmp, vector<vector<int>>& vec)
 {
 	ifstream fin;
 	fin.open(path);
 	if (!fin.is_open())
 	{
-		cout << "Îøèáêà îòêðûòèÿ ôàéëà!" << endl;
+		cout << "ÐžÑˆÐ¸Ð±ÐºÐ° Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚Ð¸Ñ Ñ„Ð°Ð¹Ð»Ð°!" << endl;
 	}
 	else {
 		for (int i = 0; i < numOfReels; i++)
 		{
-			fin >> reelsLength[i];
-			reelsValue[i].resize(reelsLength[i]);
+			fin >> reelsLengthTmp[i];
+			vec[i].resize(reelsLengthTmp[i]);
 		}
 		for (int i = 0; i < numOfReels; i++)
 		{
 
-			for (int j = 0; j < reelsLength[i]; j++)
+			for (int j = 0; j < reelsLengthTmp[i]; j++)
 			{
-				fin >> reelsValue[i][j];
+				fin >> vec[i][j];
 			}
 		}
 	}
 }
-void readWinTable(string path)
+void readWinTable(string path, vector<vector<double>>& winTableTmp)
 {
 	ifstream fin;
 	fin.open(path);
 	if (!fin.is_open())
 	{
-		cout << "Îøèáêà îòêðûòèÿ ôàéëà!" << endl;
+		cout << "ÐžÑˆÐ¸Ð±ÐºÐ° Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚Ð¸Ñ Ñ„Ð°Ð¹Ð»Ð°!" << endl;
 	}
 	else {
 		for (int i = 0; i < numOfFruit; i++)
 		{
 			for (int j = 0; j < numOfReels; j++)
 			{
-				fin >> winTable[i][j];
+				fin >> winTableTmp[i][j];
 			}
 		}
 	}
@@ -85,13 +86,16 @@ void make_permutation(int j)
 		}
 	}
 }
+
 int main()
 {
 	setlocale(LC_ALL, "ru");
 	srand(time(NULL));
-	readFromFile(pathReels);
-	readWinTable(pathWinTable);
-
+	string pathReels = "../reels.txt";
+	string pathWinTable = "../winTable.txt";
+	readFromFile(pathReels, reelsLength, reelsValue);
+	readWinTable(pathWinTable, winTable);
+	hello();
 	cout << "Win table:\n";
 	for (int i = 0; i < numOfFruit; i++)
 	{
