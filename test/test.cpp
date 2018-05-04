@@ -1,29 +1,21 @@
 #include "slots.h"
 
+int numOfReels = 3;
+int numOfFruit = 4;
+vector<double> wins(numOfReels);
+vector<int> tempComb(numOfReels);
+vector<int> reelsLength(numOfReels);
+vector<vector<int>> reelsValue(numOfReels);
+vector<vector<double>> winTable(numOfFruit, vector<double>(numOfReels));
+vector<vector<double>> tableOfProb(numOfReels, vector<double>(numOfFruit, 0));
+double totalScore = 0;
+double probScore = 0;
+double theoreticalScore = 0;
 
-
-  int numOfReels = 3;
-  int numOfFruit = 4;
-
- vector<double> wins(numOfReels);
- vector<int> tempComb(numOfReels);
-
- vector<int> reelsLength(numOfReels);
- vector<vector<int>> reelsValue(numOfReels);
- vector<vector<double>> winTable(numOfFruit, vector<double>(numOfReels));
- vector<vector<double>> tableOfProb(numOfReels, vector<double>(numOfFruit, 0));
-
-
- double totalScore = 0;
- double probScore = 0;
- double theoreticalScore = 0;
-
-
-
-void readFromFile(string path, vector<int>& reelsLengthTmp, vector<vector<int>>& vec)
+void readReelsValue(string* path, vector<int>* reelsLength, vector<vector<int>>* reelsValue)
 {
 	ifstream fin;
-	fin.open(path);
+	fin.open(*path);
 	if (!fin.is_open())
 	{
 		cout << "Ошибка открытия файла!" << endl;
@@ -31,23 +23,23 @@ void readFromFile(string path, vector<int>& reelsLengthTmp, vector<vector<int>>&
 	else {
 		for (int i = 0; i < numOfReels; i++)
 		{
-			fin >> reelsLengthTmp[i];
-			vec[i].resize(reelsLengthTmp[i]);
+			fin >> (*reelsLength)[i];
+			(*reelsValue)[i].resize((*reelsLength)[i]);
 		}
 		for (int i = 0; i < numOfReels; i++)
 		{
 
-			for (int j = 0; j < reelsLengthTmp[i]; j++)
+			for (int j = 0; j < (*reelsLength)[i]; j++)
 			{
-				fin >> vec[i][j];
+				fin >> (*reelsValue)[i][j];
 			}
 		}
 	}
 }
-void readWinTable(string path, vector<vector<double>>& winTableTmp)
+void readWinTable(string *path, vector<vector<double>>* winTable)
 {
 	ifstream fin;
-	fin.open(path);
+	fin.open(*path);
 	if (!fin.is_open())
 	{
 		cout << "Ошибка открытия файла!" << endl;
@@ -57,19 +49,19 @@ void readWinTable(string path, vector<vector<double>>& winTableTmp)
 		{
 			for (int j = 0; j < numOfReels; j++)
 			{
-				fin >> winTableTmp[i][j];
+				fin >> (*winTable)[i][j];
 			}
 		}
 	}
 }
-int check(vector<int> vec)
+int checkLine(vector<int>* line)
 {
-	for (int i = 1; i < vec.capacity(); i++)
+	for (int i = 1; i < (*line).capacity(); i++)
 	{
-		if (vec[i - 1] != vec[i])
+		if ((*line)[i - 1] != (*line)[i])
 			return i;
 	}
-	return vec.capacity();
+	return (*line).capacity();
 }
 void make_permutation(int j)
 {
@@ -78,7 +70,7 @@ void make_permutation(int j)
 		tempComb[j] = reelsValue[j][i];
 		if (j == (numOfReels - 1))
 		{
-			totalScore += winTable[tempComb[0] - 1][check(tempComb) - 1];
+			totalScore += winTable[tempComb[0] - 1][checkLine(&tempComb) - 1];
 		}
 		else
 		{
@@ -93,13 +85,18 @@ int main()
 	srand(time(NULL));
 	string pathReels = "../reels.txt";
 	string pathWinTable = "../winTable.txt";
-	readFromFile(pathReels, reelsLength, reelsValue);
-	readWinTable(pathWinTable, winTable);
+	readReelsValue(&pathReels, &reelsLength, &reelsValue);
+	readWinTable(&pathWinTable, &winTable);
 	hello();
 	cout << "Win table:\n";
 	for (int i = 0; i < numOfFruit; i++)
 	{
 		copy(winTable[i].begin(), winTable[i].end(), ostream_iterator<double>(cout, " "));
+		cout << endl;
+	}cout << "Reels:\n";
+	for (int i = 0; i < numOfReels; i++)
+	{
+		copy(reelsValue[i].begin(), reelsValue[i].end(), ostream_iterator<double>(cout, " "));
 		cout << endl;
 	}
 
@@ -116,7 +113,7 @@ int main()
 		{
 			tempComb[j] = reelsValue[j][(rand()) % reelsLength[j]];
 		}
-		probScore += winTable[tempComb[0] - 1][check(tempComb) - 1];
+		probScore += winTable[tempComb[0] - 1][checkLine(&tempComb) - 1];
 	}
 	//the calculation of the average gain from all possible permutations
 	make_permutation(0);
