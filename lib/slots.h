@@ -6,6 +6,9 @@
 #include <iterator>
 #include <ctime>
 
+#define ERROR_OPEN_REELS_FAILED 10001
+#define ERROR_OPEN_WIN_TABLE_FAILED 10002
+
 using namespace std;
 
 class SlotGameParams
@@ -21,8 +24,8 @@ public:
 	vector<vector<double>> winTable;
 	vector<vector<double>> tableOfProb;
 	SlotGameParams(int _numOfReels, int _numOfFruit);
-	bool readReelsValue(string *pathReelsValue);
-	bool readWinTable(string *pathWinTable);
+	void readReelsValue(string *pathReelsValue);
+	void readWinTable(string *pathWinTable);
 	double theoreticalWin();
 	double randomStartsWin(int numOfStarts);
 	double everyStartsWin();

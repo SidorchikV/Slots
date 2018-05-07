@@ -1,4 +1,3 @@
-
 #include "slots.h"
 
 SlotGameParams::SlotGameParams(int _numOfReels, int _numOfFruit)
@@ -12,14 +11,13 @@ SlotGameParams::SlotGameParams(int _numOfReels, int _numOfFruit)
 	tableOfProb = vector<vector<double>>(_numOfReels, vector<double>(_numOfFruit, 0));
 }
 
-bool SlotGameParams::readReelsValue(string * pathReelsValue)
+void SlotGameParams::readReelsValue(string * pathReelsValue)
 {
 	ifstream fin;
 	fin.open(*pathReelsValue);
 	if (!fin.is_open())
 	{
-		cout << "Ошибка открытия файла!" << endl;
-		return false;
+		throw ERROR_OPEN_REELS_FAILED;
 	}
 	else {
 		for (int i = 0; i < numOfReels; i++)
@@ -41,17 +39,16 @@ bool SlotGameParams::readReelsValue(string * pathReelsValue)
 	{
 		numOfCombinations *= reelsLength[i];
 	}
-	return true;
+	fin.close();
 }
 
-bool SlotGameParams::readWinTable(string * pathWinTable)
+void SlotGameParams::readWinTable(string * pathWinTable)
 {
 	ifstream fin;
 	fin.open(*pathWinTable);
 	if (!fin.is_open())
 	{
-		cout << "Ошибка открытия файла!" << endl;
-		return false;
+		throw ERROR_OPEN_WIN_TABLE_FAILED;
 	}
 	else {
 		for (int i = 0; i < numOfFruit; i++)
@@ -62,7 +59,7 @@ bool SlotGameParams::readWinTable(string * pathWinTable)
 			}
 		}
 	}
-	return true;
+	fin.close();
 }
 
 bool SlotGameParams::countProbabilityTable()
