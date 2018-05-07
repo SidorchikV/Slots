@@ -12,11 +12,11 @@ project(Slots)
 
 include_directories(lib)
 
-set(SOURCE_EXE test/test.cpp)
+set(SOURCE_EXE test/test_slots.cpp)
 
 set(SOURCE_LIB lib/slots.cpp)
 add_library(slots STATIC ${SOURCE_LIB})
 
-add_executable(test ${SOURCE_EXE})
+add_executable(test_slots ${SOURCE_EXE})
 
-target_link_libraries(test slots)
+target_link_libraries(test_slots slots)
