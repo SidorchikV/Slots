@@ -8,13 +8,20 @@
 
 using namespace std;
 
-void hello()
+class SlotGameParams
 {
-	cout << "Hello, it's slots!!" << endl;
-}
-/*
-void readFromFile(string path, vector<int>& reelsLengthTmp, vector<vector<int>>& vec);
-void readWinTable(string path, vector<vector<double>>& winTableTmp);
-int check(vector<int> vec);
-void make_permutation(int j);
-*/
+public:
+	int numOfReels;
+	int numOfFruit;
+
+	vector<int> reelsLength;
+	vector<vector<int>> reelsValue;
+	vector<vector<double>> winTable;
+	vector<vector<double>> tableOfProb;
+
+	SlotGameParams(int _numOfReels, int _numOfFruit);
+	bool readReelsValue(string *pathReelsValue);
+	bool readWinTable(string *pathWinTable);
+	int getNumOfReels();
+	int getNumOfFruit();
+};
