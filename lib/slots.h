@@ -13,24 +13,22 @@ using namespace std;
 
 class SlotGameParams
 {
-	bool countProbabilityTable();
-	void make_permutation(int j, double *totalScore, vector<int>* tempComb);
+  bool countProbabilityTable();
+  void make_permutation(int j, double *totalScore, vector<int>* tempComb);
 public:
-	int numOfReels;
-	int numOfFruit;
-	int numOfCombinations;
-	vector<int> reelsLength;
-	vector<vector<int>> reelsValue;
-	vector<vector<double>> winTable;
-	vector<vector<double>> tableOfProb;
-	SlotGameParams(int _numOfReels, int _numOfFruit);
-	void readReelsValue(string *pathReelsValue);
-	void readWinTable(string *pathWinTable);
-	double theoreticalWin();
-	double randomStartsWin(int numOfStarts);
-	double everyStartsWin();
-	int getNumOfReels();
-	int getNumOfFruit();
+  int numOfReels;
+  int numOfFruit;
+  int numOfCombinations;
+  vector<int> reelsLength;
+  vector<vector<int>> reelsValue;
+  vector<vector<double>> winTable;
+  vector<vector<double>> tableOfProb;
+  SlotGameParams(int _numOfReels, int _numOfFruit);
+  void readReelsValue(string *pathReelsValue);
+  void readWinTable(string *pathWinTable);
+  double theoreticalWin();
+  double randomStartsWin(int numOfStarts);
+  double everyStartsWin();
 };
 
 int checkLine(vector<int>* line);
