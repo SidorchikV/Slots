@@ -10,10 +10,9 @@ SlotGameParams::SlotGameParams(int _numOfReels, int _numOfFruit)
   tableOfProb = vector<vector<double>>(_numOfReels, vector<double>(_numOfFruit, 0));
 }
 
-void SlotGameParams::readReelsValue(string * pathReelsValue)
+void SlotGameParams::readReelsValue(string const & pathReelsValue)
 {
-  ifstream fin;
-  fin.open(*pathReelsValue);
+  ifstream fin(pathReelsValue);
   if (!fin.is_open())
   {
     throw ERROR_OPEN_REELS_FAILED;
@@ -38,10 +37,9 @@ void SlotGameParams::readReelsValue(string * pathReelsValue)
   }
 }
 
-void SlotGameParams::readWinTable(string * pathWinTable)
+void SlotGameParams::readWinTable(string const & pathWinTable)
 {
-  ifstream fin;
-  fin.open(*pathWinTable);
+  ifstream fin(pathWinTable);
   if (!fin.is_open())
   {
     throw ERROR_OPEN_WIN_TABLE_FAILED;
@@ -110,7 +108,7 @@ double SlotGameParams::randomStartsWin(int numOfStarts)
     {
       tempComb[j] = reelsValue[j][(rand()) % reelsLength[j]];
     }
-    randomStartsScore += winTable[tempComb[0] - 1][checkLine(&tempComb) - 1];
+    randomStartsScore += winTable[tempComb[0] - 1][checkLine(tempComb) - 1];
   }
   return randomStartsScore / (numOfStarts);
 }
@@ -119,18 +117,18 @@ double SlotGameParams::everyStartsWin()
 {
   vector<int> tempComb(numOfReels);
   double totalScore = 0;
-  make_permutation(0, &totalScore, &tempComb);
+  make_permutation(0, totalScore, tempComb);
   return totalScore/ numOfCombinations;
 }
 
-void SlotGameParams::make_permutation(int j, double *totalScore, vector<int>* tempComb)
+void SlotGameParams::make_permutation(int j, double &totalScore, vector<int>& tempComb)
 {
   for (int i = 0; i < reelsLength[j]; i++)
   {
-    (*tempComb)[j] = reelsValue[j][i];
+    tempComb[j] = reelsValue[j][i];
     if (j == (numOfReels - 1))
     {
-      (*totalScore) += winTable[(*tempComb)[0] - 1][checkLine(tempComb) - 1];
+      totalScore += winTable[tempComb[0] - 1][checkLine(tempComb) - 1];
     }
     else
     {
@@ -139,12 +137,12 @@ void SlotGameParams::make_permutation(int j, double *totalScore, vector<int>* te
   }
 }
 
-int checkLine(vector<int>* line)
+int checkLine(vector<int>& line)
 {
-  for (int i = 1; i < (*line).capacity(); i++)
+  for (int i = 1; i < line.size(); i++)
   {
-    if ((*line)[i - 1] != (*line)[i])
+    if (line[i - 1] != line[i])
       return i;
   }
-  return (*line).capacity();
+  return line.capacity();
 }

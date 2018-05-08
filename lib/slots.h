@@ -14,7 +14,7 @@ using namespace std;
 class SlotGameParams
 {
   bool countProbabilityTable();
-  void make_permutation(int j, double *totalScore, vector<int>* tempComb);
+  void make_permutation(int j, double &totalScore, vector<int>& tempComb);
 public:
   int numOfReels;
   int numOfFruit;
@@ -24,11 +24,11 @@ public:
   vector<vector<double>> winTable;
   vector<vector<double>> tableOfProb;
   SlotGameParams(int _numOfReels, int _numOfFruit);
-  void readReelsValue(string *pathReelsValue);
-  void readWinTable(string *pathWinTable);
+  void readReelsValue(string const &pathReelsValue);
+  void readWinTable(string const &pathWinTable);
   double theoreticalWin();
   double randomStartsWin(int numOfStarts);
   double everyStartsWin();
 };
 
-int checkLine(vector<int>* line);
+int checkLine(vector<int> &line);

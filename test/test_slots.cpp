@@ -7,8 +7,8 @@ int main()
   SlotGameParams sampleSlot = SlotGameParams(3, 4);
   try
   {
-    sampleSlot.readWinTable(&pathWinTable);
-    sampleSlot.readReelsValue(&pathReels);
+    sampleSlot.readWinTable(pathWinTable);
+    sampleSlot.readReelsValue(pathReels);
     cout << "\nProbabilistic average win : " << sampleSlot.randomStartsWin(0) << endl;
     cout << "\nReal average win : " << sampleSlot.everyStartsWin() << endl;
     cout << "\nTheoretical average win : " << sampleSlot.theoreticalWin() << endl << endl;
