@@ -17,15 +17,15 @@ void SlotGameParams::readReelsValue(string const & pathReelsValue)
   }
   for (int i = 0; i < numOfReels; i++)
   {
-    fin >> (reelsLength)[i];
-    (reelsValue)[i].resize((reelsLength)[i]);
+    fin >> reelsLength[i];
+    reelsValue[i].resize(reelsLength[i]);
   }
   for (int i = 0; i < numOfReels; i++)
   {
 
-    for (int j = 0; j < (reelsLength)[i]; j++)
+    for (int j = 0; j < reelsLength[i]; j++)
     {
-      fin >> (reelsValue)[i][j];
+      fin >> reelsValue[i][j];
     }
   }
   numOfCombinations = 1;
@@ -42,16 +42,16 @@ void SlotGameParams::readWinTable(string const & pathWinTable)
   {
     throw std::invalid_argument("Can not open file with win table values. Check the path you entered: " + pathWinTable + "\n");
   }
-    for (int i = 0; i < numOfFruit; i++)
+  for (int i = 0; i < numOfFruit; i++)
+  {
+    for (int j = 0; j < numOfReels; j++)
     {
-      for (int j = 0; j < numOfReels; j++)
-      {
-        fin >> (winTable)[i][j];
-      }
+      fin >> winTable[i][j];
     }
+  }
 }
 
-bool SlotGameParams::countProbabilityTable()
+void SlotGameParams::countProbabilityTable()
 {
   for (int i = 0; i < numOfReels; i++)
   {
@@ -64,7 +64,6 @@ bool SlotGameParams::countProbabilityTable()
       tableOfProb[i][j] /= reelsLength[i];
     }
   }
-  return true;
 }
 
 double SlotGameParams::theoreticalWin()
@@ -110,7 +109,7 @@ double SlotGameParams::randomStartsWin(int numOfStarts)
     }
     randomStartsScore += winTable[tempComb[0] - 1][checkLine(tempComb) - 1];
   }
-  return randomStartsScore / (numOfStarts);
+  return randomStartsScore / numOfStarts;
 }
 
 double SlotGameParams::everyStartsWin()
@@ -144,5 +143,5 @@ int checkLine(vector<int>& line)
     if (line[i - 1] != line[i])
       return i;
   }
-  return line.capacity();
+  return line.size();
 }

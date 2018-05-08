@@ -1,9 +1,7 @@
 #pragma once
-#include <vector>
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <iterator>
 #include <random>
 #include <chrono>
 
@@ -11,7 +9,7 @@ using namespace std;
 
 class SlotGameParams
 {
-  bool countProbabilityTable();
+  void countProbabilityTable();
   void make_permutation(int j, double &totalScore, vector<int>& tempComb);
 public:
   int numOfReels;
