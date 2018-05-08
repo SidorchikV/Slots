@@ -1,30 +1,26 @@
 #pragma once
-#include <iostream>
-#include <fstream>
 #include <vector>
 #include <random>
 #include <chrono>
 
-using namespace std;
-
 class SlotGameParams
 {
   void countProbabilityTable();
-  void make_permutation(int j, double &totalScore, vector<int>& tempComb);
+  void make_permutation(int j, double &totalScore, std::vector<int>& tempComb);
 public:
   int numOfReels;
   int numOfFruit;
   int numOfCombinations;
-  vector<int> reelsLength;
-  vector<vector<int>> reelsValue;
-  vector<vector<double>> winTable;
-  vector<vector<double>> tableOfProb;
+  std::vector<int> reelsLength;
+  std::vector<std::vector<int>> reelsValue;
+  std::vector<std::vector<double>> winTable;
+  std::vector<std::vector<double>> tableOfProb;
   SlotGameParams(int _numOfReels, int _numOfFruit);
-  void readReelsValue(string const &pathReelsValue);
-  void readWinTable(string const &pathWinTable);
+  void readReelsValue(std::string const &pathReelsValue);
+  void readWinTable(std::string const &pathWinTable);
   double theoreticalWin();
-  double randomStartsWin(int numOfStarts);
+  double randomStartsWin(int numOfStarts, unsigned seed = std::chrono::system_clock::now().time_since_epoch().count() );
   double everyStartsWin();
 };
 
-int checkLine(vector<int> &line);
+int checkLine(std::vector<int> &line);

@@ -1,16 +1,17 @@
 #include "slots.h"
+#include <fstream>
 
 SlotGameParams::SlotGameParams(int _numOfReels, int _numOfFruit) : numOfReels(_numOfReels), numOfFruit(_numOfFruit)
 {
-  reelsLength = vector<int>(_numOfReels);
-  reelsValue = vector<vector<int>>(_numOfReels);
-  winTable = vector<vector<double>>(_numOfFruit, vector<double>(_numOfReels));
-  tableOfProb = vector<vector<double>>(_numOfReels, vector<double>(_numOfFruit, 0));
+  reelsLength = std::vector<int>(_numOfReels);
+  reelsValue = std::vector<std::vector<int>>(_numOfReels);
+  winTable = std::vector<std::vector<double>>(_numOfFruit, std::vector<double>(_numOfReels));
+  tableOfProb = std::vector<std::vector<double>>(_numOfReels, std::vector<double>(_numOfFruit, 0));
 }
 
-void SlotGameParams::readReelsValue(string const & pathReelsValue)
+void SlotGameParams::readReelsValue(std::string const & pathReelsValue)
 {
-  ifstream fin(pathReelsValue);
+  std::ifstream fin(pathReelsValue);
   if (!fin.is_open())
   {
     throw std::invalid_argument("Can not open file with reels values. Check the path you entered: " + pathReelsValue + "\n");
@@ -35,9 +36,9 @@ void SlotGameParams::readReelsValue(string const & pathReelsValue)
   }
 }
 
-void SlotGameParams::readWinTable(string const & pathWinTable)
+void SlotGameParams::readWinTable(std::string const & pathWinTable)
 {
-  ifstream fin(pathWinTable);
+  std::ifstream fin(pathWinTable);
   if (!fin.is_open())
   {
     throw std::invalid_argument("Can not open file with win table values. Check the path you entered: " + pathWinTable + "\n");
@@ -70,7 +71,7 @@ double SlotGameParams::theoreticalWin()
 {
   this->countProbabilityTable();
   double theoreticalScore = 0;
-  vector<double> wins(numOfReels);
+  std::vector<double> wins(numOfReels);
   for (int f = 0; f < numOfFruit; f++)
   {
     wins = winTable[f];
@@ -90,22 +91,25 @@ double SlotGameParams::theoreticalWin()
   return theoreticalScore;
 }
 
-double SlotGameParams::randomStartsWin(int numOfStarts)
+double SlotGameParams::randomStartsWin(int numOfStarts, unsigned seed)
 {
-  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::default_random_engine generator(seed);
-  std::uniform_int_distribution<int> distribution(1, numOfCombinations - 1);
+  std::vector<std::uniform_int_distribution<int>> distribution(numOfReels);
+  for (int j = 0; j < numOfReels; j++)
+  {
+    distribution[j] = std::uniform_int_distribution<int>(0, reelsLength[j] - 1);
+  }
   if (numOfStarts < 1)
   {
     numOfStarts = numOfCombinations;
   }
   double randomStartsScore = 0;
-  vector<int> tempComb(numOfReels);
+  std::vector<int> tempComb(numOfReels);
   for (int i = 0; i < numOfStarts; i++)
   {
     for (int j = 0; j < numOfReels; j++)
     {
-      tempComb[j] = reelsValue[j][distribution(generator) % reelsLength[j]];
+      tempComb[j] = reelsValue[j][distribution[j](generator)];
     }
     randomStartsScore += winTable[tempComb[0] - 1][checkLine(tempComb) - 1];
   }
@@ -114,13 +118,13 @@ double SlotGameParams::randomStartsWin(int numOfStarts)
 
 double SlotGameParams::everyStartsWin()
 {
-  vector<int> tempComb(numOfReels);
+  std::vector<int> tempComb(numOfReels);
   double totalScore = 0;
   make_permutation(0, totalScore, tempComb);
   return totalScore/ numOfCombinations;
 }
 
-void SlotGameParams::make_permutation(int j, double &totalScore, vector<int>& tempComb)
+void SlotGameParams::make_permutation(int j, double &totalScore, std::vector<int>& tempComb)
 {
   for (int i = 0; i < reelsLength[j]; i++)
   {
@@ -136,7 +140,7 @@ void SlotGameParams::make_permutation(int j, double &totalScore, vector<int>& te
   }
 }
 
-int checkLine(vector<int>& line)
+int checkLine(std::vector<int>& line)
 {
   for (int i = 1; i < line.size(); i++)
   {

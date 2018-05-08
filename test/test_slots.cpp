@@ -1,21 +1,23 @@
 #include "slots.h"
+#include <iostream>
 
 int main()
 {
-  string pathReels = "../reels.txt";
-  string pathWinTable = "../winTable.txt";
+  std::string pathReels = "../reels.txt";
+  std::string pathWinTable = "../winTable.txt";
   SlotGameParams sampleSlot = SlotGameParams(3, 4);
   try
   {
     sampleSlot.readWinTable(pathWinTable);
     sampleSlot.readReelsValue(pathReels);
-    cout << "\nProbabilistic average win : " << sampleSlot.randomStartsWin(0) << endl;
-    cout << "\nReal average win : " << sampleSlot.everyStartsWin() << endl;
-    cout << "\nTheoretical average win : " << sampleSlot.theoreticalWin() << endl << endl;
+    std::cout << "\nProbabilistic average win (default parameters): " << sampleSlot.randomStartsWin(0) << std::endl;
+    std::cout << "\nProbabilistic average win : " << sampleSlot.randomStartsWin(5000, 789) << std::endl;
+    std::cout << "\nReal average win : " << sampleSlot.everyStartsWin() << std::endl;
+    std::cout << "\nTheoretical average win : " << sampleSlot.theoreticalWin() << std::endl << std::endl;
   }
   catch (std::exception err)
   {
-    cout << err.what() << endl;
+    std::cout << err.what() << std::endl;
   }
   system("pause");
   return 0;
