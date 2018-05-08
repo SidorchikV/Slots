@@ -1,13 +1,14 @@
 #include "slots.h"
 #include <fstream>
 
-SlotGameParams::SlotGameParams(int _numOfReels, int _numOfFruit) : numOfReels(_numOfReels), numOfFruit(_numOfFruit)
-{
-  reelsLength = std::vector<int>(_numOfReels);
-  reelsValue = std::vector<std::vector<int>>(_numOfReels);
-  winTable = std::vector<std::vector<double>>(_numOfFruit, std::vector<double>(_numOfReels));
-  tableOfProb = std::vector<std::vector<double>>(_numOfReels, std::vector<double>(_numOfFruit, 0));
-}
+SlotGameParams::SlotGameParams(int _numOfReels, int _numOfFruit) : 
+  numOfReels(_numOfReels), 
+  numOfFruit(_numOfFruit), 
+  reelsLength(std::vector<int>(_numOfReels)),
+  reelsValue(std::vector<std::vector<int>>(_numOfReels)),
+  winTable(std::vector<std::vector<double>>(_numOfFruit, std::vector<double>(_numOfReels))),
+  tableOfProb(std::vector<std::vector<double>>(_numOfReels, std::vector<double>(_numOfFruit, 0)))
+{}
 
 void SlotGameParams::readReelsValue(std::string const & pathReelsValue)
 {
