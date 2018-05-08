@@ -13,20 +13,9 @@ int main()
     cout << "\nReal average win : " << sampleSlot.everyStartsWin() << endl;
     cout << "\nTheoretical average win : " << sampleSlot.theoreticalWin() << endl << endl;
   }
-  catch (int er)
+  catch (std::exception err)
   {
-    switch (er)
-    {
-    case ERROR_OPEN_REELS_FAILED:
-      cout << "Can not open file with reels values." << endl;
-      break;
-    case ERROR_OPEN_WIN_TABLE_FAILED:
-      cout << "Can not open file with win table values." << endl;
-      break;
-    default:
-      cout << "error!" << endl;
-      break;
-    }
+    cout << err.what() << endl;
   }
   system("pause");
   return 0;

@@ -1,9 +1,7 @@
 #include "slots.h"
 
-SlotGameParams::SlotGameParams(int _numOfReels, int _numOfFruit)
+SlotGameParams::SlotGameParams(int _numOfReels, int _numOfFruit) : numOfReels(_numOfReels), numOfFruit(_numOfFruit)
 {
-  numOfReels = _numOfReels;
-  numOfFruit = _numOfFruit;
   reelsLength = vector<int>(_numOfReels);
   reelsValue = vector<vector<int>>(_numOfReels);
   winTable = vector<vector<double>>(_numOfFruit, vector<double>(_numOfReels));
@@ -15,7 +13,7 @@ void SlotGameParams::readReelsValue(string const & pathReelsValue)
   ifstream fin(pathReelsValue);
   if (!fin.is_open())
   {
-    throw ERROR_OPEN_REELS_FAILED;
+    throw std::invalid_argument("Can not open file with reels values. Check the path you entered: " + pathReelsValue + "\n");
   }
   for (int i = 0; i < numOfReels; i++)
   {
@@ -42,7 +40,7 @@ void SlotGameParams::readWinTable(string const & pathWinTable)
   ifstream fin(pathWinTable);
   if (!fin.is_open())
   {
-    throw ERROR_OPEN_WIN_TABLE_FAILED;
+    throw std::invalid_argument("Can not open file with win table values. Check the path you entered: " + pathWinTable + "\n");
   }
     for (int i = 0; i < numOfFruit; i++)
     {
@@ -95,8 +93,6 @@ double SlotGameParams::theoreticalWin()
 
 double SlotGameParams::randomStartsWin(int numOfStarts)
 {
-  //srand(time(NULL));
-
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::default_random_engine generator(seed);
   std::uniform_int_distribution<int> distribution(1, numOfCombinations - 1);

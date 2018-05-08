@@ -7,9 +7,6 @@
 #include <random>
 #include <chrono>
 
-#define ERROR_OPEN_REELS_FAILED 10001
-#define ERROR_OPEN_WIN_TABLE_FAILED 10002
-
 using namespace std;
 
 class SlotGameParams
