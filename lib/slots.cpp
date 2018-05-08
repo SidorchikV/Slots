@@ -6,8 +6,8 @@ SlotGameParams::SlotGameParams(int _numOfReels, int _numOfFruit) :
   numOfFruit(_numOfFruit), 
   reelsLength(std::vector<int>(_numOfReels)),
   reelsValue(std::vector<std::vector<int>>(_numOfReels)),
-  winTable(std::vector<std::vector<double>>(_numOfFruit, std::vector<double>(_numOfReels))),
-  tableOfProb(std::vector<std::vector<double>>(_numOfReels, std::vector<double>(_numOfFruit, 0)))
+  winTable(std::vector<std::vector<int>>(_numOfFruit, std::vector<int>(_numOfReels))),
+  tableOfProb(std::vector<std::vector<int>>(_numOfReels, std::vector<int>(_numOfFruit, 0)))
 {}
 
 void SlotGameParams::readReelsValue(std::string const & pathReelsValue)
@@ -61,10 +61,6 @@ void SlotGameParams::countProbabilityTable()
     {
       tableOfProb[i][(reelsValue[i][j] - 1)]++;
     }
-    for (int j = 0; j < numOfFruit; j++)
-    {
-      tableOfProb[i][j] /= reelsLength[i];
-    }
   }
 }
 
@@ -75,16 +71,17 @@ double SlotGameParams::theoreticalWin()
   std::vector<double> wins(numOfReels);
   for (int f = 0; f < numOfFruit; f++)
   {
-    wins = winTable[f];
+    //wins = (std::vector<double>)winTable[f];
     for (int i = 0; i < numOfReels; i++)
     {
+      wins[i] = (double)winTable[f][i];
       for (int k = 0; k <= i; k++)
       {
-        wins[i] *= tableOfProb[k][f];
+        wins[i] *= ((double)tableOfProb[k][f]/ reelsLength[k]);
       }
       if (i + 1 < numOfReels)
       {
-        wins[i] *= (1 - tableOfProb[i + 1][f]);
+        wins[i] *= (1 - ((double)tableOfProb[i + 1][f]/ reelsLength[i+1]));
       }
       theoreticalScore += wins[i];
     }

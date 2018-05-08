@@ -13,8 +13,8 @@ public:
   int numOfCombinations;
   std::vector<int> reelsLength;
   std::vector<std::vector<int>> reelsValue;
-  std::vector<std::vector<double>> winTable;
-  std::vector<std::vector<double>> tableOfProb;
+  std::vector<std::vector<int>> winTable;
+  std::vector<std::vector<int>> tableOfProb;
   SlotGameParams(int _numOfReels, int _numOfFruit);
   void readReelsValue(std::string const &pathReelsValue);
   void readWinTable(std::string const &pathWinTable);
