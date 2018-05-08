@@ -95,7 +95,11 @@ double SlotGameParams::theoreticalWin()
 
 double SlotGameParams::randomStartsWin(int numOfStarts)
 {
-  srand(time(NULL));
+  //srand(time(NULL));
+
+  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+  std::default_random_engine generator(seed);
+  std::uniform_int_distribution<int> distribution(1, numOfCombinations - 1);
   if (numOfStarts < 1)
   {
     numOfStarts = numOfCombinations;
@@ -106,7 +110,7 @@ double SlotGameParams::randomStartsWin(int numOfStarts)
   {
     for (int j = 0; j < numOfReels; j++)
     {
-      tempComb[j] = reelsValue[j][(rand()) % reelsLength[j]];
+      tempComb[j] = reelsValue[j][distribution(generator) % reelsLength[j]];
     }
     randomStartsScore += winTable[tempComb[0] - 1][checkLine(tempComb) - 1];
   }
