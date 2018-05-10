@@ -67,23 +67,31 @@ void SlotGameParams::countProbabilityTable()
 double SlotGameParams::theoreticalWin()
 {
   this->countProbabilityTable();
+  std::vector<size_t> denominators(numOfReels, 1);
+  denominators[0] = reelsLength[0];
+  if (numOfReels > 1)
+    denominators[0] *= reelsLength[1];
+  for (size_t i = 1; i < numOfReels - 1; i++)
+  {
+    denominators[i] = denominators[i - 1] * reelsLength[i + 1];
+  }
+  denominators[numOfReels - 1] = denominators[numOfReels - 2];
   double theoreticalScore = 0;
-  std::vector<double> wins(numOfReels);
+  std::vector<size_t> wins(numOfReels);
   for (size_t f = 0; f < numOfFruit; f++)
   {
-    //wins = (std::vector<double>)winTable[f];
     for (size_t i = 0; i < numOfReels; i++)
     {
-      wins[i] = (double)winTable[f][i];
+      wins[i] = winTable[f][i];
       for (size_t k = 0; k <= i; k++)
       {
-        wins[i] *= ((double)tableOfProb[k][f]/ reelsLength[k]);
+        wins[i] *= tableOfProb[k][f];
       }
       if (i + 1 < numOfReels)
       {
-        wins[i] *= (1 - ((double)tableOfProb[i + 1][f]/ reelsLength[i+1]));
+        wins[i] *= reelsLength[i + 1] - tableOfProb[i + 1][f];
       }
-      theoreticalScore += wins[i];
+      theoreticalScore += (double)wins[i]/denominators[i];
     }
   }
   return theoreticalScore;
@@ -92,10 +100,10 @@ double SlotGameParams::theoreticalWin()
 double SlotGameParams::randomStartsWin(size_t numOfStarts, unsigned seed)
 {
   std::default_random_engine generator(seed);
-  std::vector<std::uniform_int_distribution<size_t>> distribution(numOfReels);
+  std::vector<std::uniform_int_distribution<size_t>> distribution;
   for (size_t j = 0; j < numOfReels; j++)
   {
-    distribution[j] = std::uniform_int_distribution<size_t>(0, reelsLength[j] - 1);
+    distribution.push_back(std::uniform_int_distribution<size_t>(0, reelsLength[j] - 1));
   }
   if (numOfStarts < 1)
   {
