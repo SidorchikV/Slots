@@ -1,0 +1,24 @@
+#pragma once
+#include <vector>
+
+class SlotGameParams
+{
+  size_t numOfReels;
+  size_t numOfFruit;
+  size_t numOfCombinations;
+  std::vector<size_t> reelsLength;
+  std::vector<std::vector<size_t>> reelsValue;
+  std::vector<std::vector<size_t>> winTable;
+  std::vector<std::vector<size_t>> tableOfProb;
+  void countProbabilityTable();
+  void make_permutation(size_t j, size_t &totalScore, std::vector<size_t>& tempComb);
+public:
+  SlotGameParams(size_t _numOfReels, size_t _numOfFruit);
+  void readReelsValue(std::string const &pathReelsValue);
+  void readWinTable(std::string const &pathWinTable);
+  double estimateRTP();
+  double approxRTP(size_t numOfStarts, unsigned seed = 42);
+  double calcRTP();
+};
+
+size_t checkLine(std::vector<size_t> const &line);
