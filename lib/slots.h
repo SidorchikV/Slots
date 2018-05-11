@@ -11,7 +11,7 @@ class SlotGameParams
   std::vector<std::vector<size_t>> winTable;
   std::vector<std::vector<size_t>> tableOfProb;
   void countProbabilityTable();
-  void make_permutation(size_t j, size_t &totalScore, std::vector<size_t>& tempComb);
+  bool inc(std::vector<size_t> &line);
 public:
   SlotGameParams(size_t _numOfReels, size_t _numOfFruit);
   void readReelsValue(std::string const &pathReelsValue);

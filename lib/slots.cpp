@@ -124,26 +124,40 @@ double SlotGameParams::approxRTP(size_t numOfStarts, unsigned seed)
 
 double SlotGameParams::calcRTP()
 {
-  std::vector<size_t> tempComb(numOfReels);
-  size_t totalScore = 0;
-  make_permutation(0, totalScore, tempComb);
-  return (double)totalScore/ numOfCombinations;
+  std::vector<size_t> line(numOfReels, 0);
+  size_t score = 0;
+  std::vector<size_t> fruitLine(numOfReels);
+  do
+  {
+    for (int j = 0; j < numOfReels; j++)
+    {
+      fruitLine[j] = reelsValue[j][line[j]];
+    }
+    score += winTable[fruitLine[0] - 1][checkLine(fruitLine) - 1];
+
+  } while (inc(line));
+  return (double)score / numOfCombinations;
 }
 
-void SlotGameParams::make_permutation(size_t j, size_t &totalScore, std::vector<size_t>& tempComb)
+bool SlotGameParams::inc(std::vector<size_t>& line)
 {
-  for (size_t i = 0; i < reelsLength[j]; i++)
+  bool isOverflow = false;
+  size_t i = numOfReels;
+  do
   {
-    tempComb[j] = reelsValue[j][i];
-    if (j == (numOfReels - 1))
+    i--;
+    if (line[i] == (reelsLength[i]-1))
     {
-      totalScore += winTable[tempComb[0] - 1][checkLine(tempComb) - 1];
+      isOverflow = true;
+      line[i] = 0;
     }
     else
     {
-      make_permutation(j + 1, totalScore, tempComb);
+      isOverflow = false;
+      line[i]++;
     }
-  }
+  } while (isOverflow && i);
+  return (!isOverflow);
 }
 
 size_t checkLine(std::vector<size_t> const & line)
