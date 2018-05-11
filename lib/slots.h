@@ -1,7 +1,5 @@
 #pragma once
 #include <vector>
-#include <random>
-#include <chrono>
 
 class SlotGameParams
 {
@@ -19,7 +17,7 @@ public:
   void readReelsValue(std::string const &pathReelsValue);
   void readWinTable(std::string const &pathWinTable);
   double estimateRTP();
-  double approxRTP(size_t numOfStarts, unsigned seed = std::chrono::system_clock::now().time_since_epoch().count() );
+  double approxRTP(size_t numOfStarts, unsigned seed = 42);
   double calcRTP();
 };
 

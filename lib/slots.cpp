@@ -1,5 +1,6 @@
 #include "slots.h"
 #include <fstream>
+#include <random>
 
 SlotGameParams::SlotGameParams(size_t _numOfReels, size_t _numOfFruit) : 
   numOfReels(_numOfReels), 
@@ -24,7 +25,6 @@ void SlotGameParams::readReelsValue(std::string const & pathReelsValue)
   }
   for (size_t i = 0; i < numOfReels; i++)
   {
-
     for (size_t j = 0; j < reelsLength[i]; j++)
     {
       fin >> reelsValue[i][j];
