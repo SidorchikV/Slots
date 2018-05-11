@@ -3,20 +3,17 @@ include(config.cmake)
 include(build.cmake)
 
 project(Slots)
-
-#set (SOURCE src/slots.cpp )
-
-
-#add_executable(Slots ${SOURCE}) 
-
-
 include_directories(lib)
 
-set(SOURCE_EXE test/test_slots.cpp)
+set(LIB_SRC lib/slots.cpp)
+set(LIB_HDR lib/slots.h)
 
-set(SOURCE_LIB lib/slots.cpp)
-add_library(slots STATIC ${SOURCE_LIB})
+SOURCE_GROUP("Header Files" FILES ${LIB_HDR})
+SOURCE_GROUP("Source Files" FILES ${LIB_SRC})
 
-add_executable(test_slots ${SOURCE_EXE})
+add_library(slots STATIC ${LIB_SRC})
+
+set(TEST_SRC test/test_slots.cpp)
+add_executable(test_slots ${TEST_SRC})
 
 target_link_libraries(test_slots slots)
