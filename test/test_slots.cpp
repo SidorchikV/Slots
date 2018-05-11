@@ -10,10 +10,10 @@ int main()
   {
     sampleSlot.readWinTable(pathWinTable);
     sampleSlot.readReelsValue(pathReels);
-    std::cout << "\nProbabilistic average win (default parameters): " << sampleSlot.randomStartsWin(0) << std::endl;
-    std::cout << "\nProbabilistic average win : " << sampleSlot.randomStartsWin(5000, 789) << std::endl;
-    std::cout << "\nReal average win : " << sampleSlot.everyStartsWin() << std::endl;
-    std::cout << "\nTheoretical average win : " << sampleSlot.theoreticalWin() << std::endl << std::endl;
+    std::cout << "\nProbabilistic average win (default parameters): " << sampleSlot.approxRTP(0) << std::endl;
+    std::cout << "\nProbabilistic average win : " << sampleSlot.approxRTP(5000, 789) << std::endl;
+    std::cout << "\nReal average win : " << sampleSlot.calcRTP() << std::endl;
+    std::cout << "\nTheoretical average win : " << sampleSlot.estimateRTP() << std::endl << std::endl;
   }
   catch (std::exception err)
   {

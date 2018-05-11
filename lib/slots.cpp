@@ -64,7 +64,7 @@ void SlotGameParams::countProbabilityTable()
   }
 }
 
-double SlotGameParams::theoreticalWin()
+double SlotGameParams::estimateRTP()
 {
   this->countProbabilityTable();
   std::vector<size_t> denominators(numOfReels, 1);
@@ -97,7 +97,7 @@ double SlotGameParams::theoreticalWin()
   return theoreticalScore;
 }
 
-double SlotGameParams::randomStartsWin(size_t numOfStarts, unsigned seed)
+double SlotGameParams::approxRTP(size_t numOfStarts, unsigned seed)
 {
   std::default_random_engine generator(seed);
   std::vector<std::uniform_int_distribution<size_t>> distribution;
@@ -122,7 +122,7 @@ double SlotGameParams::randomStartsWin(size_t numOfStarts, unsigned seed)
   return (double)randomStartsScore / numOfStarts;
 }
 
-double SlotGameParams::everyStartsWin()
+double SlotGameParams::calcRTP()
 {
   std::vector<size_t> tempComb(numOfReels);
   size_t totalScore = 0;

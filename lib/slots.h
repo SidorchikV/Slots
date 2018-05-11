@@ -18,9 +18,9 @@ public:
   SlotGameParams(size_t _numOfReels, size_t _numOfFruit);
   void readReelsValue(std::string const &pathReelsValue);
   void readWinTable(std::string const &pathWinTable);
-  double theoreticalWin();
-  double randomStartsWin(size_t numOfStarts, unsigned seed = std::chrono::system_clock::now().time_since_epoch().count() );
-  double everyStartsWin();
+  double estimateRTP();
+  double approxRTP(size_t numOfStarts, unsigned seed = std::chrono::system_clock::now().time_since_epoch().count() );
+  double calcRTP();
 };
 
 size_t checkLine(std::vector<size_t> const &line);
