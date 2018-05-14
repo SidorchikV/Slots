@@ -14,12 +14,12 @@ class SlotGameParams
   bool inc(std::vector<size_t> &line);
 public:
   SlotGameParams(size_t _numOfReels, size_t _numOfFruit);
-  void readReelsValue(std::string const &pathReelsValue);
+  void readReels(std::string const &pathReelsValue);
   void readWinTable(std::string const &pathWinTable);
   double estimateRTP();
   double approxRTP(size_t numOfStarts, unsigned seed = 42);
   double calcRTP();
-  static SlotGameParams* randomReels(unsigned seed = 31);
+  static SlotGameParams randomReels(unsigned seed = 31);
 };
 
 size_t checkLine(std::vector<size_t> const &line);

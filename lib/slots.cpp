@@ -11,7 +11,7 @@ SlotGameParams::SlotGameParams(size_t _numOfReels, size_t _numOfFruit) :
   tableOfProb(std::vector<std::vector<size_t>>(_numOfReels, std::vector<size_t>(_numOfFruit, 0)))
 {}
 
-void SlotGameParams::readReelsValue(std::string const & pathReelsValue)
+void SlotGameParams::readReels(std::string const & pathReelsValue)
 {
   std::ifstream fin(pathReelsValue);
   if (!fin.is_open())
@@ -139,42 +139,41 @@ double SlotGameParams::calcRTP()
   return (double)score / numOfCombinations;
 }
 
-SlotGameParams * SlotGameParams::randomReels(unsigned seed)
+SlotGameParams  SlotGameParams::randomReels(unsigned seed)
 {
   std::default_random_engine generator(seed);
-  std::uniform_int_distribution<size_t> dist_2_6(2,6);
-  std::uniform_int_distribution<size_t> dist_0_9(0,9);
-  size_t reels = dist_2_6(generator);
-  size_t fruits = dist_2_6(generator);
-  SlotGameParams *SGP = new SlotGameParams(reels,fruits);
-  std::uniform_int_distribution<size_t> dist_fruit(1, SGP->numOfFruit);
-  for (size_t i = 0; i < SGP->numOfFruit; i++)
+  std::uniform_int_distribution<size_t> dist_reel_count(2,6);
+  std::uniform_int_distribution<size_t> dist_fruit_count(2,6);
+  std::uniform_int_distribution<size_t> dist_reel_len(0,9);
+  std::uniform_int_distribution<size_t> dist_win_value(0,8);
+  SlotGameParams SGP(dist_reel_count(generator), dist_fruit_count(generator));
+  std::uniform_int_distribution<size_t> dist_fruit_on_reel(1, SGP.numOfFruit);
+  for (size_t i = 0; i < SGP.numOfFruit; i++)
   {
-    for (size_t j = 0; j < SGP->numOfReels; j++)
+    for (size_t j = 0; j < SGP.numOfReels; j++)
     {
-      SGP->winTable[i][j] = dist_0_9(generator);
+      SGP.winTable[i][j] = dist_win_value(generator);
     }
-    std::sort(SGP->winTable[i].begin(), SGP->winTable[i].end()); 
+    std::sort(SGP.winTable[i].begin(), SGP.winTable[i].end()); 
   }
-
-  for (size_t i = 0; i < SGP->numOfReels; i++)
+  for (size_t i = 0; i < SGP.numOfReels; i++)
   {
-    SGP->reelsLength[i] = dist_0_9(generator)*5 + dist_0_9(generator) + 1;
-    SGP->reelsValue[i].resize(SGP->reelsLength[i]);
+    SGP.reelsLength[i] = dist_reel_len(generator)*5 + dist_reel_len(generator) + 1;
+    SGP.reelsValue[i].resize(SGP.reelsLength[i]);
   }
-  for (size_t i = 0; i < SGP->numOfReels; i++)
+  for (size_t i = 0; i < SGP.numOfReels; i++)
   {
-    for (size_t j = 0; j < SGP->reelsLength[i]; j++)
+    for (size_t j = 0; j < SGP.reelsLength[i]; j++)
     {
-      SGP->reelsValue[i][j] = dist_fruit(generator);
+      SGP.reelsValue[i][j] = dist_fruit_on_reel(generator);
     }
   }
-  SGP->numOfCombinations = 1;
-  for (size_t i = 0; i < SGP->numOfReels; i++)
+  SGP.numOfCombinations = 1;
+  for (size_t i = 0; i < SGP.numOfReels; i++)
   {
-    SGP->numOfCombinations *= SGP->reelsLength[i];
+    SGP.numOfCombinations *= SGP.reelsLength[i];
   }
-  return SGP;
+  return std::move(SGP);
 }
 
 bool SlotGameParams::inc(std::vector<size_t>& line)
