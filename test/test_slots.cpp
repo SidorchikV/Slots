@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <chrono>
+#include <random>
 
 typedef struct testParams
 {
@@ -51,6 +53,15 @@ int main()
       std::cout << err.what();
     }
   }
+  std::cout << "\n\nRandom parameters:" << std::endl;
+  std::cout << "\nTest #7" << std::endl;
+  auto sampleSlot1 = reinterpret_cast<SlotGameParams*>(SlotGameParams::randomReels());
+  std::cout << "\nCalculated RTP : " << sampleSlot1->calcRTP();
+  std::cout << "\nEstimate RTP: " << sampleSlot1->estimateRTP() << std::endl;
+  std::cout << "\nTest #8" << std::endl;
+  auto sampleSlot2 = reinterpret_cast<SlotGameParams*>(SlotGameParams::randomReels(std::chrono::system_clock::now().time_since_epoch().count()));
+  std::cout << "\nCalculated RTP : " << sampleSlot2->calcRTP();
+  std::cout << "\nEstimate RTP: " << sampleSlot2->estimateRTP() << std::endl;
   system("pause");
   return 0;
 }

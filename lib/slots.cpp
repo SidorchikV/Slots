@@ -139,6 +139,44 @@ double SlotGameParams::calcRTP()
   return (double)score / numOfCombinations;
 }
 
+SlotGameParams * SlotGameParams::randomReels(unsigned seed)
+{
+  std::default_random_engine generator(seed);
+  std::uniform_int_distribution<size_t> dist_2_6(2,6);
+  std::uniform_int_distribution<size_t> dist_0_9(0,9);
+  size_t reels = dist_2_6(generator);
+  size_t fruits = dist_2_6(generator);
+  SlotGameParams *SGP = new SlotGameParams(reels,fruits);
+  std::uniform_int_distribution<size_t> dist_fruit(1, SGP->numOfFruit);
+  for (size_t i = 0; i < SGP->numOfFruit; i++)
+  {
+    for (size_t j = 0; j < SGP->numOfReels; j++)
+    {
+      SGP->winTable[i][j] = dist_0_9(generator);
+    }
+    std::sort(SGP->winTable[i].begin(), SGP->winTable[i].end()); 
+  }
+
+  for (size_t i = 0; i < SGP->numOfReels; i++)
+  {
+    SGP->reelsLength[i] = dist_0_9(generator)*5 + dist_0_9(generator) + 1;
+    SGP->reelsValue[i].resize(SGP->reelsLength[i]);
+  }
+  for (size_t i = 0; i < SGP->numOfReels; i++)
+  {
+    for (size_t j = 0; j < SGP->reelsLength[i]; j++)
+    {
+      SGP->reelsValue[i][j] = dist_fruit(generator);
+    }
+  }
+  SGP->numOfCombinations = 1;
+  for (size_t i = 0; i < SGP->numOfReels; i++)
+  {
+    SGP->numOfCombinations *= SGP->reelsLength[i];
+  }
+  return SGP;
+}
+
 bool SlotGameParams::inc(std::vector<size_t>& line)
 {
   bool isOverflow = false;

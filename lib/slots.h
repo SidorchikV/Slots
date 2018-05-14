@@ -19,6 +19,7 @@ public:
   double estimateRTP();
   double approxRTP(size_t numOfStarts, unsigned seed = 42);
   double calcRTP();
+  static SlotGameParams* randomReels(unsigned seed = 31);
 };
 
 size_t checkLine(std::vector<size_t> const &line);
