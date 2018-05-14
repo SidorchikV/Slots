@@ -30,11 +30,7 @@ void SlotGameParams::readReels(std::string const & pathReelsValue)
       fin >> reelsValue[i][j];
     }
   }
-  numOfCombinations = 1;
-  for (size_t i = 0; i < numOfReels; i++)
-  {
-    numOfCombinations *= reelsLength[i];
-  }
+  this->countNumOfCombinations();
 }
 
 void SlotGameParams::readWinTable(std::string const & pathWinTable)
@@ -139,6 +135,34 @@ double SlotGameParams::calcRTP()
   return (double)score / numOfCombinations;
 }
 
+bool SlotGameParams::pointTest(testStruct & TS)
+{
+  if (TS.reelsValue.size() != (TS.winTable[0]).size())
+    return false;
+  SlotGameParams SGP(TS.reelsValue.size(), TS.winTable.size());
+  for (size_t i = 0; i < SGP.numOfFruit; i++)
+  {
+    for (size_t j = 0; j < SGP.numOfReels; j++)
+    {
+      SGP.winTable[i][j] = TS.winTable[i][j];
+    }
+  }
+  for (size_t i = 0; i < SGP.numOfReels; i++)
+  {
+    SGP.reelsLength[i] = (TS.reelsValue[i]).size();
+    SGP.reelsValue[i].resize(SGP.reelsLength[i]);
+  }
+  for (size_t i = 0; i < SGP.numOfReels; i++)
+  {
+    for (size_t j = 0; j < SGP.reelsLength[i]; j++)
+    {
+      SGP.reelsValue[i][j] = TS.reelsValue[i][j];
+    }
+  }
+  SGP.countNumOfCombinations();
+  return ((SGP.calcRTP() - TS.realRTP) < 0.00001);
+}
+
 SlotGameParams  SlotGameParams::randomReels(unsigned seed)
 {
   std::default_random_engine generator(seed);
@@ -168,11 +192,7 @@ SlotGameParams  SlotGameParams::randomReels(unsigned seed)
       SGP.reelsValue[i][j] = dist_fruit_on_reel(generator);
     }
   }
-  SGP.numOfCombinations = 1;
-  for (size_t i = 0; i < SGP.numOfReels; i++)
-  {
-    SGP.numOfCombinations *= SGP.reelsLength[i];
-  }
+  SGP.countNumOfCombinations();
   return std::move(SGP);
 }
 
@@ -195,6 +215,16 @@ bool SlotGameParams::inc(std::vector<size_t>& line)
     }
   } while (isOverflow && i);
   return (!isOverflow);
+}
+
+size_t SlotGameParams::countNumOfCombinations()
+{
+  numOfCombinations = 1;
+  for (size_t i = 0; i < numOfReels; i++)
+  {
+    numOfCombinations *= reelsLength[i];
+  }
+  return numOfCombinations;
 }
 
 size_t checkLine(std::vector<size_t> const & line)

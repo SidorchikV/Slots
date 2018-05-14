@@ -24,9 +24,15 @@ void readTestParam(std::string const & pathTestParam, testParams & tParams)
   fin >> tParams.numOfStarts;
   fin >> tParams.seed;
 }
+
+testStruct sampleTP = { {{ 1, 2, 4, 4, 3},{2, 3, 1, 2, 4, 3},{3, 2, 1, 4, 4, 2} }, 
+{ {1, 2, 7},{0, 1, 8},{0, 3, 6},{0, 2, 8} },
+0.983333 };
+
 int main()
 {
-  std::string pathReels;
+  std::cout << SlotGameParams::pointTest(sampleTP) << std::endl;
+  /*std::string pathReels;
   std::string pathWinTable;
   std::string path = "../test/test_cases/";
   testParams tP;
@@ -40,7 +46,7 @@ int main()
       readTestParam(path + std::to_string(i) + "/testParams.txt", tP);
       SlotGameParams sampleSlot(tP.numOfReels, tP.numOfFruit);
       sampleSlot.readWinTable(pathWinTable);
-      sampleSlot.readReelsValue(pathReels);
+      sampleSlot.readReels(pathReels);
       std::cout << "\nCalculated RTP : " << sampleSlot.calcRTP();
       std::cout << "\nEstimate RTP: " << sampleSlot.estimateRTP();
       if (tP.seed <= 0)
@@ -52,16 +58,18 @@ int main()
     {
       std::cout << err.what();
     }
-  }
-  std::cout << "\n\nRandom parameters:" << std::endl;
+  }*/
+ /* std::cout << "\n\nRandom parameters:" << std::endl;
   std::cout << "\nTest #7" << std::endl;
-  auto sampleSlot1 = reinterpret_cast<SlotGameParams*>(SlotGameParams::randomReels());
-  std::cout << "\nCalculated RTP : " << sampleSlot1->calcRTP();
-  std::cout << "\nEstimate RTP: " << sampleSlot1->estimateRTP() << std::endl;
+  auto sampleSlot1 = SlotGameParams::randomReels();
+  std::cout << "\nCalculated RTP : " << sampleSlot1.calcRTP();
+  std::cout << "\nEstimate RTP: " << sampleSlot1.estimateRTP();
+  std::cout << "\nApproximate RTP (default parameters): " << sampleSlot1.approxRTP(0) << std::endl;
   std::cout << "\nTest #8" << std::endl;
-  auto sampleSlot2 = reinterpret_cast<SlotGameParams*>(SlotGameParams::randomReels(std::chrono::system_clock::now().time_since_epoch().count()));
-  std::cout << "\nCalculated RTP : " << sampleSlot2->calcRTP();
-  std::cout << "\nEstimate RTP: " << sampleSlot2->estimateRTP() << std::endl;
+  auto sampleSlot2 = SlotGameParams::randomReels(std::chrono::system_clock::now().time_since_epoch().count());
+  std::cout << "\nCalculated RTP : " << sampleSlot2.calcRTP();
+  std::cout << "\nEstimate RTP: " << sampleSlot2.estimateRTP();
+  std::cout << "\nApproximate RTP (default parameters): " << sampleSlot2.approxRTP(0) << std::endl;*/
   system("pause");
   return 0;
 }
