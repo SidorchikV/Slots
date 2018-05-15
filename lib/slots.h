@@ -19,7 +19,7 @@ class SlotGameParams
   std::vector<std::vector<size_t>> tableOfProb;
   void countProbabilityTable();
   bool inc(std::vector<size_t> &line);
-  size_t countNumOfCombinations();
+  void countNumOfCombinations();
 public:
   SlotGameParams(size_t _numOfReels, size_t _numOfFruit);
   void readReels(std::string const &pathReelsValue);
@@ -29,6 +29,8 @@ public:
   double calcRTP();
   static bool pointTest(testStruct& TS);
   static SlotGameParams randomReels(unsigned seed = 31);
+  size_t getnumOfCombinations();
 };
 
 size_t checkLine(std::vector<size_t> const &line);
+bool randomParamsTest(unsigned seed = 31, size_t numOfStarts = 0, std::string const &pathReelsValue = "");

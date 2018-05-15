@@ -196,6 +196,11 @@ SlotGameParams  SlotGameParams::randomReels(unsigned seed)
   return std::move(SGP);
 }
 
+size_t SlotGameParams::getnumOfCombinations()
+{
+  return this->numOfCombinations;
+}
+
 bool SlotGameParams::inc(std::vector<size_t>& line)
 {
   bool isOverflow = false;
@@ -217,14 +222,13 @@ bool SlotGameParams::inc(std::vector<size_t>& line)
   return (!isOverflow);
 }
 
-size_t SlotGameParams::countNumOfCombinations()
+void SlotGameParams::countNumOfCombinations()
 {
   numOfCombinations = 1;
   for (size_t i = 0; i < numOfReels; i++)
   {
     numOfCombinations *= reelsLength[i];
   }
-  return numOfCombinations;
 }
 
 size_t checkLine(std::vector<size_t> const & line)
@@ -235,4 +239,30 @@ size_t checkLine(std::vector<size_t> const & line)
       return i;
   }
   return line.size();
+}
+
+bool randomParamsTest(unsigned seed, size_t numOfStarts, std::string const &path)
+{
+  auto sampleSlot1 = SlotGameParams::randomReels(seed);
+  //double calcRTP =  sampleSlot1.calcRTP();
+  double estimateRTP = sampleSlot1.estimateRTP();
+  double approxRTP = sampleSlot1.approxRTP(numOfStarts);
+  /*if (calcRTP != estimateRTP)
+  return false;*/
+  double percent = fabs(approxRTP - estimateRTP) * 100 / estimateRTP;
+  if (path != "")
+  {
+    std::ofstream fout(path, std::ios::app);
+    if (!fout.is_open())
+    {
+      throw std::invalid_argument("Can not open file to write results. Check the path you entered:" + path + "\n");
+    }
+    fout << sampleSlot1.getnumOfCombinations() << " " << numOfStarts << " " <<  estimateRTP << " " << approxRTP << " " << percent << "\n";
+  }
+  else
+  {
+    printf("numOfCombinations = %u\nnumOfStarts = %u\n", sampleSlot1.getnumOfCombinations(), numOfStarts);
+    printf("Percent = %f\n", percent);
+  }
+  return (percent <= 1);
 }
