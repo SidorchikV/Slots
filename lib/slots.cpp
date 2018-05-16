@@ -6,7 +6,6 @@
 #include <cassert>
 
 SlotGameParams::SlotGameParams(size_t _numOfReels, size_t _numOfFruit) : 
-  reelsLength(std::vector<size_t>(_numOfReels)),
   reelsValue(std::vector<std::vector<size_t>>(_numOfReels)),
   winTable(std::vector<std::vector<size_t>>(_numOfFruit, std::vector<size_t>(_numOfReels))),
   tableOfProb(std::vector<std::vector<size_t>>(_numOfReels, std::vector<size_t>(_numOfFruit, 0)))
@@ -15,18 +14,19 @@ SlotGameParams::SlotGameParams(size_t _numOfReels, size_t _numOfFruit) :
 void SlotGameParams::readReels(std::string const & pathReelsValue)
 {
   std::ifstream fin(pathReelsValue);
+  size_t tempLength = 0;
   if (!fin.is_open())
   {
     throw std::invalid_argument("Can not open file with reels values. Check the path you entered: " + pathReelsValue + "\n");
   }
   for (size_t i = 0; i < numOfReels(); i++)
   {
-    fin >> reelsLength[i];
-    reelsValue[i].resize(reelsLength[i]);
+    fin >> tempLength;
+    reelsValue[i].resize(tempLength);
   }
   for (size_t i = 0; i < numOfReels(); i++)
   {
-    for (size_t j = 0; j < reelsLength[i]; j++)
+    for (size_t j = 0; j < reelsLength(i); j++)
     {
       fin >> reelsValue[i][j];
     }
@@ -59,11 +59,16 @@ size_t SlotGameParams::numOfFruit()
   return winTable.size();
 }
 
+size_t SlotGameParams::reelsLength(size_t i)
+{
+  return reelsValue[i].size();
+}
+
 void SlotGameParams::countProbabilityTable()
 {
   for (size_t i = 0; i < numOfReels(); i++)
   {
-    for (size_t j = 0; j < reelsLength[i]; j++)
+    for (size_t j = 0; j < reelsLength(i); j++)
     {
       tableOfProb[i][(reelsValue[i][j] - 1)]++;
     }
@@ -74,12 +79,12 @@ double SlotGameParams::estimateRTP()
 {
   this->countProbabilityTable();
   std::vector<size_t> denominators(numOfReels(), 1);
-  denominators[0] = reelsLength[0];
+  denominators[0] = reelsLength(0);
   if (numOfReels() > 1)
-    denominators[0] *= reelsLength[1];
+    denominators[0] *= reelsLength(1);
   for (size_t i = 1; i < numOfReels() - 1; i++)
   {
-    denominators[i] = denominators[i - 1] * reelsLength[i + 1];
+    denominators[i] = denominators[i - 1] * reelsLength(i + 1);
   }
   denominators[numOfReels() - 1] = denominators[numOfReels() - 2];
   double theoreticalScore = 0;
@@ -95,7 +100,7 @@ double SlotGameParams::estimateRTP()
       }
       if (i + 1 < numOfReels())
       {
-        wins[i] *= reelsLength[i + 1] - tableOfProb[i + 1][f];
+        wins[i] *= reelsLength(i + 1) - tableOfProb[i + 1][f];
       }
       theoreticalScore += (double)wins[i]/denominators[i];
     }
@@ -109,7 +114,7 @@ double SlotGameParams::approxRTP(size_t numOfStarts, unsigned seed)
   std::vector<std::uniform_int_distribution<size_t>> distribution;
   for (size_t j = 0; j < numOfReels(); j++)
   {
-    distribution.push_back(std::uniform_int_distribution<size_t>(0, reelsLength[j] - 1));
+    distribution.push_back(std::uniform_int_distribution<size_t>(0, reelsLength(j) - 1));
   }
   if (numOfStarts < 1)
   {
@@ -158,12 +163,11 @@ bool SlotGameParams::pointTest(testStruct & TS)
   }
   for (size_t i = 0; i < SGP.numOfReels(); i++)
   {
-    SGP.reelsLength[i] = (TS.reelsValue[i]).size();
-    SGP.reelsValue[i].resize(SGP.reelsLength[i]);
+    SGP.reelsValue[i].resize((TS.reelsValue[i]).size());
   }
   for (size_t i = 0; i < SGP.numOfReels(); i++)
   {
-    for (size_t j = 0; j < SGP.reelsLength[i]; j++)
+    for (size_t j = 0; j < SGP.reelsLength(i); j++)
     {
       SGP.reelsValue[i][j] = TS.reelsValue[i][j];
     }
@@ -193,12 +197,8 @@ SlotGameParams  SlotGameParams::randomReels(unsigned seed)
   }
   for (size_t i = 0; i < SGP.numOfReels(); i++)
   {
-    SGP.reelsLength[i] = dist_reel_len(generator)*5 + dist_reel_len(generator) + 1;
-    SGP.reelsValue[i].resize(SGP.reelsLength[i]);
-  }
-  for (size_t i = 0; i < SGP.numOfReels(); i++)
-  {
-    for (size_t j = 0; j < SGP.reelsLength[i]; j++)
+    SGP.reelsValue[i].resize(dist_reel_len(generator) * 5 + dist_reel_len(generator) + 1);
+    for (size_t j = 0; j < SGP.reelsLength(i); j++)
     {
       SGP.reelsValue[i][j] = dist_fruit_on_reel(generator);
     }
@@ -213,7 +213,7 @@ bool SlotGameParams::inc(std::vector<size_t>& line)
   do
   {
     i--;
-    if (line[i] == (reelsLength[i]-1))
+    if (line[i] == (reelsLength(i)-1))
     {
       isOverflow = true;
       line[i] = 0;
@@ -232,7 +232,7 @@ size_t SlotGameParams::numOfCombinations()
   size_t numOfCombs = 1;
   for (size_t i = 0; i < numOfReels(); i++)
   {
-     numOfCombs *= reelsLength[i];
+     numOfCombs *= reelsLength(i);
   }
   return numOfCombs;
 }
