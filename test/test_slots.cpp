@@ -16,6 +16,13 @@ int main()
   {
     std::cout << SlotGameParams::pointTest(sampleTP1) << std::endl;
     std::cout << SlotGameParams::pointTest(sampleTP2) << std::endl;
+    std::string pathReels = "../reels.txt";
+    std::string pathWinTable = "../winTable.txt";
+    SlotGameParams sampleSlot(3, 4);
+    sampleSlot.readWinTable(pathWinTable);
+    sampleSlot.readReels(pathReels);
+    std::cout << "\nCalculated Practically RTP : " << sampleSlot.calcPracticallyRTP();
+    std::cout << "\nCalculated in theory RTP: " << sampleSlot.calcInTheoryRTP();
     for (int i = 0; i < 5; i++)
     {
       for (int j = 0; j < 5; j++)

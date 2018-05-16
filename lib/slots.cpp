@@ -6,28 +6,28 @@
 #include <cassert>
 
 SlotGameParams::SlotGameParams(size_t _numOfReels, size_t _numOfFruit) : 
-  reelsValue(std::vector<std::vector<size_t>>(_numOfReels)),
+  reels(std::vector<std::vector<size_t>>(_numOfReels)),
   winTable(std::vector<std::vector<size_t>>(_numOfFruit, std::vector<size_t>(_numOfReels)))
 {}
 
-void SlotGameParams::readReels(std::string const & pathReelsValue)
+void SlotGameParams::readReels(std::string const & pathreels)
 {
-  std::ifstream fin(pathReelsValue);
+  std::ifstream fin(pathreels);
   size_t tempLength = 0;
   if (!fin.is_open())
   {
-    throw std::invalid_argument("Can not open file with reels values. Check the path you entered: " + pathReelsValue + "\n");
+    throw std::invalid_argument("Can not open file with reels values. Check the path you entered: " + pathreels + "\n");
   }
   for (size_t i = 0; i < numOfReels(); i++)
   {
     fin >> tempLength;
-    reelsValue[i].resize(tempLength);
+    reels[i].resize(tempLength);
   }
   for (size_t i = 0; i < numOfReels(); i++)
   {
     for (size_t j = 0; j < reelsLength(i); j++)
     {
-      fin >> reelsValue[i][j];
+      fin >> reels[i][j];
     }
   }
 }
@@ -50,7 +50,7 @@ void SlotGameParams::readWinTable(std::string const & pathWinTable)
 
 size_t SlotGameParams::numOfReels()
 {
-  return reelsValue.size();
+  return reels.size();
 }
 
 size_t SlotGameParams::numOfFruit()
@@ -60,17 +60,17 @@ size_t SlotGameParams::numOfFruit()
 
 size_t SlotGameParams::reelsLength(size_t i)
 {
-  return reelsValue[i].size();
+  return reels[i].size();
 }
 
-double SlotGameParams::estimateRTP()
+double SlotGameParams::calcInTheoryRTP()
 {
   std::vector<std::vector<size_t>> tableOfProb(numOfReels(), std::vector<size_t>(numOfFruit(), 0));
   for (size_t i = 0; i < numOfReels(); i++)
   {
     for (size_t j = 0; j < reelsLength(i); j++)
     {
-      tableOfProb[i][(reelsValue[i][j] - 1)]++;
+      tableOfProb[i][(reels[i][j] - 1)]++;
     }
   }
   std::vector<size_t> denominators(numOfReels(), 1);
@@ -103,7 +103,7 @@ double SlotGameParams::estimateRTP()
   return theoreticalScore;
 }
 
-double SlotGameParams::approxRTP(size_t numOfStarts, unsigned seed)
+double SlotGameParams::estimateRTP(size_t numOfStarts, unsigned seed)
 {
   std::default_random_engine generator(seed);
   std::vector<std::uniform_int_distribution<size_t>> distribution;
@@ -121,14 +121,14 @@ double SlotGameParams::approxRTP(size_t numOfStarts, unsigned seed)
   {
     for (size_t j = 0; j < numOfReels(); j++)
     {
-      tempComb[j] = reelsValue[j][distribution[j](generator)];
+      tempComb[j] = reels[j][distribution[j](generator)];
     }
     randomStartsScore += winTable[tempComb[0] - 1][checkLine(tempComb) - 1];
   }
   return (double)randomStartsScore / numOfStarts;
 }
 
-double SlotGameParams::calcRTP()
+double SlotGameParams::calcPracticallyRTP()
 {
   std::vector<size_t> line(numOfReels(), 0);
   size_t score = 0;
@@ -137,7 +137,7 @@ double SlotGameParams::calcRTP()
   {
     for (int j = 0; j < numOfReels(); j++)
     {
-      fruitLine[j] = reelsValue[j][line[j]];
+      fruitLine[j] = reels[j][line[j]];
     }
     score += winTable[fruitLine[0] - 1][checkLine(fruitLine) - 1];
 
@@ -147,8 +147,8 @@ double SlotGameParams::calcRTP()
 
 bool SlotGameParams::pointTest(testStruct & TS)
 {
-  assert(TS.reelsValue.size() == (TS.winTable[0]).size());
-  SlotGameParams SGP(TS.reelsValue.size(), TS.winTable.size());
+  assert(TS.reels.size() == (TS.winTable[0]).size());
+  SlotGameParams SGP(TS.reels.size(), TS.winTable.size());
   for (size_t i = 0; i < SGP.numOfFruit(); i++)
   {
     for (size_t j = 0; j < SGP.numOfReels(); j++)
@@ -158,16 +158,16 @@ bool SlotGameParams::pointTest(testStruct & TS)
   }
   for (size_t i = 0; i < SGP.numOfReels(); i++)
   {
-    SGP.reelsValue[i].resize((TS.reelsValue[i]).size());
+    SGP.reels[i].resize((TS.reels[i]).size());
   }
   for (size_t i = 0; i < SGP.numOfReels(); i++)
   {
     for (size_t j = 0; j < SGP.reelsLength(i); j++)
     {
-      SGP.reelsValue[i][j] = TS.reelsValue[i][j];
+      SGP.reels[i][j] = TS.reels[i][j];
     }
   }
-  return ((SGP.calcRTP() - TS.realRTP) < 0.00001);
+  return ((SGP.calcPracticallyRTP() - TS.realRTP) < 0.00001);
 }
 
 SlotGameParams  SlotGameParams::randomReels(unsigned seed)
@@ -192,10 +192,10 @@ SlotGameParams  SlotGameParams::randomReels(unsigned seed)
   }
   for (size_t i = 0; i < SGP.numOfReels(); i++)
   {
-    SGP.reelsValue[i].resize(dist_reel_len(generator) * 5 + dist_reel_len(generator) + 1);
+    SGP.reels[i].resize(dist_reel_len(generator) * 5 + dist_reel_len(generator) + 1);
     for (size_t j = 0; j < SGP.reelsLength(i); j++)
     {
-      SGP.reelsValue[i][j] = dist_fruit_on_reel(generator);
+      SGP.reels[i][j] = dist_fruit_on_reel(generator);
     }
   }
   return std::move(SGP);
@@ -245,12 +245,12 @@ size_t checkLine(std::vector<size_t> const & line)
 bool randomParamsTest(unsigned seed, size_t numOfStarts, std::string const &path)
 {
   auto sampleSlot1 = SlotGameParams::randomReels(seed);
-  //double calcRTP =  sampleSlot1.calcRTP();
-  double estimateRTP = sampleSlot1.estimateRTP();
-  double approxRTP = sampleSlot1.approxRTP(numOfStarts);
-  /*if (calcRTP != estimateRTP)
+  //double calcPracticallyRTP =  sampleSlot1.calcPracticallyRTP();
+  double calcInTheoryRTP = sampleSlot1.calcInTheoryRTP();
+  double estimateRTP = sampleSlot1.estimateRTP(numOfStarts);
+  /*if (calcPracticallyRTP != calcInTheoryRTP)
   return false;*/
-  double percent = fabs(approxRTP - estimateRTP) * 100 / estimateRTP;
+  double percent = fabs(estimateRTP - calcInTheoryRTP) * 100 / calcInTheoryRTP;
   if (path != "")
   {
     std::ofstream fout(path, std::ios::app);
@@ -259,7 +259,7 @@ bool randomParamsTest(unsigned seed, size_t numOfStarts, std::string const &path
       throw std::invalid_argument("Can not open file to write results. Check the path you entered:" + path + "\n");
     }
     fout << sampleSlot1.numOfCombinations() << " " << numOfStarts ;
-    fout << " " <<estimateRTP << " " << approxRTP ;
+    fout << " " <<calcInTheoryRTP << " " << estimateRTP ;
     fout << " " << percent << std::endl;
   }
   else
