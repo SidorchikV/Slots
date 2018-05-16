@@ -10,11 +10,11 @@ typedef struct testStruct
 
 class SlotGameParams
 {
-  size_t numOfReels;
+  
   size_t numOfFruit;
   std::vector<size_t> reelsLength;
 
-  //size_t numOfReels();
+  size_t numOfReels();
   //size_t numOfFruit();
   
   //size_t reelsLength(size_t i);
