@@ -15,8 +15,6 @@ class SlotGameParams
   size_t reelsLength(size_t i);
   std::vector<std::vector<size_t>> reelsValue;
   std::vector<std::vector<size_t>> winTable;
-  std::vector<std::vector<size_t>> tableOfProb;
-  void countProbabilityTable();
   bool inc(std::vector<size_t> &line);
 public:
   size_t numOfCombinations();

@@ -7,8 +7,7 @@
 
 SlotGameParams::SlotGameParams(size_t _numOfReels, size_t _numOfFruit) : 
   reelsValue(std::vector<std::vector<size_t>>(_numOfReels)),
-  winTable(std::vector<std::vector<size_t>>(_numOfFruit, std::vector<size_t>(_numOfReels))),
-  tableOfProb(std::vector<std::vector<size_t>>(_numOfReels, std::vector<size_t>(_numOfFruit, 0)))
+  winTable(std::vector<std::vector<size_t>>(_numOfFruit, std::vector<size_t>(_numOfReels)))
 {}
 
 void SlotGameParams::readReels(std::string const & pathReelsValue)
@@ -64,8 +63,9 @@ size_t SlotGameParams::reelsLength(size_t i)
   return reelsValue[i].size();
 }
 
-void SlotGameParams::countProbabilityTable()
+double SlotGameParams::estimateRTP()
 {
+  std::vector<std::vector<size_t>> tableOfProb(numOfReels(), std::vector<size_t>(numOfFruit(), 0));
   for (size_t i = 0; i < numOfReels(); i++)
   {
     for (size_t j = 0; j < reelsLength(i); j++)
@@ -73,11 +73,6 @@ void SlotGameParams::countProbabilityTable()
       tableOfProb[i][(reelsValue[i][j] - 1)]++;
     }
   }
-}
-
-double SlotGameParams::estimateRTP()
-{
-  this->countProbabilityTable();
   std::vector<size_t> denominators(numOfReels(), 1);
   denominators[0] = reelsLength(0);
   if (numOfReels() > 1)
