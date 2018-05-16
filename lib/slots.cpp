@@ -1,6 +1,9 @@
 #include "slots.h"
+#include <iostream>
 #include <fstream>
 #include <random>
+#include <algorithm>
+#include <cassert>
 
 SlotGameParams::SlotGameParams(size_t _numOfReels, size_t _numOfFruit) : 
   numOfReels(_numOfReels), 
@@ -137,8 +140,7 @@ double SlotGameParams::calcRTP()
 
 bool SlotGameParams::pointTest(testStruct & TS)
 {
-  if (TS.reelsValue.size() != (TS.winTable[0]).size())
-    return false;
+  assert(TS.reelsValue.size() == (TS.winTable[0]).size());
   SlotGameParams SGP(TS.reelsValue.size(), TS.winTable.size());
   for (size_t i = 0; i < SGP.numOfFruit; i++)
   {
@@ -170,8 +172,11 @@ SlotGameParams  SlotGameParams::randomReels(unsigned seed)
   std::uniform_int_distribution<size_t> dist_fruit_count(2,6);
   std::uniform_int_distribution<size_t> dist_reel_len(0,9);
   std::uniform_int_distribution<size_t> dist_win_value(0,8);
+
   SlotGameParams SGP(dist_reel_count(generator), dist_fruit_count(generator));
+
   std::uniform_int_distribution<size_t> dist_fruit_on_reel(1, SGP.numOfFruit);
+  
   for (size_t i = 0; i < SGP.numOfFruit; i++)
   {
     for (size_t j = 0; j < SGP.numOfReels; j++)
@@ -257,12 +262,15 @@ bool randomParamsTest(unsigned seed, size_t numOfStarts, std::string const &path
     {
       throw std::invalid_argument("Can not open file to write results. Check the path you entered:" + path + "\n");
     }
-    fout << sampleSlot1.getnumOfCombinations() << " " << numOfStarts << " " <<  estimateRTP << " " << approxRTP << " " << percent << "\n";
+    fout << sampleSlot1.getnumOfCombinations() << " " << numOfStarts ;
+    fout << " " <<estimateRTP << " " << approxRTP ;
+    fout << " " << percent << std::endl;
   }
   else
   {
-    printf("numOfCombinations = %u\nnumOfStarts = %u\n", sampleSlot1.getnumOfCombinations(), numOfStarts);
-    printf("Percent = %f\n", percent);
+    std::cout << "\nnumOfCombinations = " << sampleSlot1.getnumOfCombinations() << std::endl;
+    std::cout << "numOfStarts = " << numOfStarts << std::endl;
+    std::cout << "Percent = " << percent << std::endl;
   }
   return (percent <= 1);
 }
