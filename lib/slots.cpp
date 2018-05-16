@@ -33,7 +33,6 @@ void SlotGameParams::readReels(std::string const & pathReelsValue)
       fin >> reelsValue[i][j];
     }
   }
-  //cheak//this->numOfCombinations();
 }
 
 void SlotGameParams::readWinTable(std::string const & pathWinTable)
@@ -161,7 +160,6 @@ bool SlotGameParams::pointTest(testStruct & TS)
       SGP.reelsValue[i][j] = TS.reelsValue[i][j];
     }
   }
-  //cheak//SGP.numOfCombinations();
   return ((SGP.calcRTP() - TS.realRTP) < 0.00001);
 }
 
@@ -197,7 +195,6 @@ SlotGameParams  SlotGameParams::randomReels(unsigned seed)
       SGP.reelsValue[i][j] = dist_fruit_on_reel(generator);
     }
   }
-  //cheak//SGP.numOfCombinations();
   return std::move(SGP);
 }
 
