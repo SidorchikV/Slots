@@ -60,6 +60,7 @@ size_t SlotGameParams::numOfFruit()
 
 size_t SlotGameParams::reelsLength(size_t i)
 {
+  assert(i < numOfReels());
   return reels[i].size();
 }
 
@@ -149,24 +150,8 @@ bool SlotGameParams::pointTest(testStruct & TS)
 {
   assert(TS.reels.size() == (TS.winTable[0]).size());
   SlotGameParams SGP(TS.reels.size(), TS.winTable.size());
-  for (size_t i = 0; i < SGP.numOfFruit(); i++)
-  {
-    for (size_t j = 0; j < SGP.numOfReels(); j++)
-    {
-      SGP.winTable[i][j] = TS.winTable[i][j];
-    }
-  }
-  for (size_t i = 0; i < SGP.numOfReels(); i++)
-  {
-    SGP.reels[i].resize((TS.reels[i]).size());
-  }
-  for (size_t i = 0; i < SGP.numOfReels(); i++)
-  {
-    for (size_t j = 0; j < SGP.reelsLength(i); j++)
-    {
-      SGP.reels[i][j] = TS.reels[i][j];
-    }
-  }
+  SGP.winTable.assign(TS.winTable.begin(), TS.winTable.end());
+  SGP.reels.assign(TS.reels.begin(), TS.reels.end());
   return ((SGP.calcPracticallyRTP() - TS.realRTP) < 0.00001);
 }
 
