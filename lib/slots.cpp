@@ -10,9 +10,7 @@ SlotGameParams::SlotGameParams(size_t _numOfReels, size_t _numOfFruit) :
   reelsValue(std::vector<std::vector<size_t>>(_numOfReels)),
   winTable(std::vector<std::vector<size_t>>(_numOfFruit, std::vector<size_t>(_numOfReels))),
   tableOfProb(std::vector<std::vector<size_t>>(_numOfReels, std::vector<size_t>(_numOfFruit, 0)))
-{
-  numOfFruit = _numOfFruit;
-}
+{}
 
 void SlotGameParams::readReels(std::string const & pathReelsValue)
 {
@@ -42,7 +40,7 @@ void SlotGameParams::readWinTable(std::string const & pathWinTable)
   {
     throw std::invalid_argument("Can not open file with win table values. Check the path you entered: " + pathWinTable + "\n");
   }
-  for (size_t i = 0; i < numOfFruit; i++)
+  for (size_t i = 0; i < numOfFruit(); i++)
   {
     for (size_t j = 0; j < numOfReels(); j++)
     {
@@ -54,6 +52,11 @@ void SlotGameParams::readWinTable(std::string const & pathWinTable)
 size_t SlotGameParams::numOfReels()
 {
   return reelsValue.size();
+}
+
+size_t SlotGameParams::numOfFruit()
+{
+  return winTable.size();
 }
 
 void SlotGameParams::countProbabilityTable()
@@ -81,7 +84,7 @@ double SlotGameParams::estimateRTP()
   denominators[numOfReels() - 1] = denominators[numOfReels() - 2];
   double theoreticalScore = 0;
   std::vector<size_t> wins(numOfReels());
-  for (size_t f = 0; f < numOfFruit; f++)
+  for (size_t f = 0; f < numOfFruit(); f++)
   {
     for (size_t i = 0; i < numOfReels(); i++)
     {
@@ -146,7 +149,7 @@ bool SlotGameParams::pointTest(testStruct & TS)
 {
   assert(TS.reelsValue.size() == (TS.winTable[0]).size());
   SlotGameParams SGP(TS.reelsValue.size(), TS.winTable.size());
-  for (size_t i = 0; i < SGP.numOfFruit; i++)
+  for (size_t i = 0; i < SGP.numOfFruit(); i++)
   {
     for (size_t j = 0; j < SGP.numOfReels(); j++)
     {
@@ -178,9 +181,9 @@ SlotGameParams  SlotGameParams::randomReels(unsigned seed)
 
   SlotGameParams SGP(dist_reel_count(generator), dist_fruit_count(generator));
 
-  std::uniform_int_distribution<size_t> dist_fruit_on_reel(1, SGP.numOfFruit);
+  std::uniform_int_distribution<size_t> dist_fruit_on_reel(1, SGP.numOfFruit());
   
-  for (size_t i = 0; i < SGP.numOfFruit; i++)
+  for (size_t i = 0; i < SGP.numOfFruit(); i++)
   {
     for (size_t j = 0; j < SGP.numOfReels(); j++)
     {
