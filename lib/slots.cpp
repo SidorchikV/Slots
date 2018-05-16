@@ -33,7 +33,7 @@ void SlotGameParams::readReels(std::string const & pathReelsValue)
       fin >> reelsValue[i][j];
     }
   }
-  this->countNumOfCombinations();
+  //cheak//this->numOfCombinations();
 }
 
 void SlotGameParams::readWinTable(std::string const & pathWinTable)
@@ -106,7 +106,7 @@ double SlotGameParams::approxRTP(size_t numOfStarts, unsigned seed)
   }
   if (numOfStarts < 1)
   {
-    numOfStarts = numOfCombinations;
+    numOfStarts = numOfCombinations();
   }
   size_t randomStartsScore = 0;
   std::vector<size_t> tempComb(numOfReels);
@@ -135,7 +135,7 @@ double SlotGameParams::calcRTP()
     score += winTable[fruitLine[0] - 1][checkLine(fruitLine) - 1];
 
   } while (inc(line));
-  return (double)score / numOfCombinations;
+  return (double)score / numOfCombinations();
 }
 
 bool SlotGameParams::pointTest(testStruct & TS)
@@ -161,7 +161,7 @@ bool SlotGameParams::pointTest(testStruct & TS)
       SGP.reelsValue[i][j] = TS.reelsValue[i][j];
     }
   }
-  SGP.countNumOfCombinations();
+  //cheak//SGP.numOfCombinations();
   return ((SGP.calcRTP() - TS.realRTP) < 0.00001);
 }
 
@@ -197,13 +197,8 @@ SlotGameParams  SlotGameParams::randomReels(unsigned seed)
       SGP.reelsValue[i][j] = dist_fruit_on_reel(generator);
     }
   }
-  SGP.countNumOfCombinations();
+  //cheak//SGP.numOfCombinations();
   return std::move(SGP);
-}
-
-size_t SlotGameParams::getnumOfCombinations()
-{
-  return this->numOfCombinations;
 }
 
 bool SlotGameParams::inc(std::vector<size_t>& line)
@@ -227,13 +222,14 @@ bool SlotGameParams::inc(std::vector<size_t>& line)
   return (!isOverflow);
 }
 
-void SlotGameParams::countNumOfCombinations()
+size_t SlotGameParams::numOfCombinations()
 {
-  numOfCombinations = 1;
+  size_t numOfCombs = 1;
   for (size_t i = 0; i < numOfReels; i++)
   {
-    numOfCombinations *= reelsLength[i];
+     numOfCombs *= reelsLength[i];
   }
+  return numOfCombs;
 }
 
 size_t checkLine(std::vector<size_t> const & line)
@@ -262,13 +258,13 @@ bool randomParamsTest(unsigned seed, size_t numOfStarts, std::string const &path
     {
       throw std::invalid_argument("Can not open file to write results. Check the path you entered:" + path + "\n");
     }
-    fout << sampleSlot1.getnumOfCombinations() << " " << numOfStarts ;
+    fout << sampleSlot1.numOfCombinations() << " " << numOfStarts ;
     fout << " " <<estimateRTP << " " << approxRTP ;
     fout << " " << percent << std::endl;
   }
   else
   {
-    std::cout << "\nnumOfCombinations = " << sampleSlot1.getnumOfCombinations() << std::endl;
+    std::cout << "\nnumOfCombinations = " << sampleSlot1.numOfCombinations() << std::endl;
     std::cout << "numOfStarts = " << numOfStarts << std::endl;
     std::cout << "Percent = " << percent << std::endl;
   }
