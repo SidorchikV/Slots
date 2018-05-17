@@ -4,48 +4,63 @@
 #include <random>
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 
 SlotGameParams::SlotGameParams(size_t _numOfReels, size_t _numOfFruit) : 
-  reels(std::vector<std::vector<size_t>>(_numOfReels)),
-  winTable(std::vector<std::vector<size_t>>(_numOfFruit, std::vector<size_t>(_numOfReels)))
+  reels(reels_t(_numOfReels)),
+  winTable(reels_t(_numOfFruit, std::vector<size_t>(_numOfReels)))
 {}
 
-void SlotGameParams::readReels(std::string const & pathreels)
+SlotGameParams::SlotGameParams(reels_t & _reels, wins_t & _winTable) 
+  : reels(_reels), winTable(_winTable)
+{}
+
+reels_t readReels(std::istream &fin)
 {
-  std::ifstream fin(pathreels);
+  reels_t reels;
   size_t tempLength = 0;
-  if (!fin.is_open())
+  if (!fin)
   {
-    throw std::invalid_argument("Can not open file with reels values. Check the path you entered: " + pathreels + "\n");
+    throw std::invalid_argument("Can not open file with reels values.\n");
   }
-  for (size_t i = 0; i < numOfReels(); i++)
+
+  fin >> tempLength;
+  reels.resize(tempLength);
+  for (size_t i = 0; i < reels.size(); i++)
   {
     fin >> tempLength;
     reels[i].resize(tempLength);
   }
-  for (size_t i = 0; i < numOfReels(); i++)
+
+  for (size_t i = 0; i < reels.size(); i++)
   {
-    for (size_t j = 0; j < reelsLength(i); j++)
+    for (size_t j = 0; j < reels[i].size(); j++)
     {
       fin >> reels[i][j];
     }
   }
+  return reels;
 }
 
-void SlotGameParams::readWinTable(std::string const & pathWinTable)
+wins_t readWinTable(std::istream &fin)
 {
-  std::ifstream fin(pathWinTable);
-  if (!fin.is_open())
+  if (!fin)
   {
-    throw std::invalid_argument("Can not open file with win table values. Check the path you entered: " + pathWinTable + "\n");
+    throw std::invalid_argument("Can not open file with win table values.\n");
   }
-  for (size_t i = 0; i < numOfFruit(); i++)
+  size_t numOfFruit = 0, numOfReels = 0;
+  fin >> numOfFruit;
+  fin >> numOfReels;
+  wins_t winTable(numOfFruit, std::vector<size_t>(numOfReels));
+
+  for (size_t i = 0; i < numOfFruit; i++)
   {
-    for (size_t j = 0; j < numOfReels(); j++)
+    for (size_t j = 0; j < numOfReels; j++)
     {
       fin >> winTable[i][j];
     }
   }
+  return winTable;
 }
 
 size_t SlotGameParams::numOfReels() const
@@ -64,7 +79,8 @@ size_t SlotGameParams::reelsLength(size_t i) const
   return reels[i].size();
 }
 
-double SlotGameParams::calcInTheoryRTP()
+
+std::vector<std::vector<size_t>> SlotGameParams::countProbabilityTable()
 {
   std::vector<std::vector<size_t>> tableOfProb(numOfReels(), std::vector<size_t>(numOfFruit(), 0));
   for (size_t i = 0; i < numOfReels(); i++)
@@ -74,6 +90,10 @@ double SlotGameParams::calcInTheoryRTP()
       tableOfProb[i][(reels[i][j] - 1)]++;
     }
   }
+  return tableOfProb;
+}
+std::vector<size_t> SlotGameParams::countDenominators()
+{
   std::vector<size_t> denominators(numOfReels(), 1);
   denominators[0] = reelsLength(0);
   if (numOfReels() > 1)
@@ -83,8 +103,16 @@ double SlotGameParams::calcInTheoryRTP()
     denominators[i] = denominators[i - 1] * reelsLength(i + 1);
   }
   denominators[numOfReels() - 1] = denominators[numOfReels() - 2];
-  double theoreticalScore = 0;
+  return denominators;
+}
+rational_t SlotGameParams::calcRTPUsingFrequency()
+{
+  std::vector<std::vector<size_t>> tableOfProb(countProbabilityTable());
+  std::vector<size_t> denominators(countDenominators());
+  size_t numOfComb = numOfCombinations();
+  size_t theoreticalScore = 0;
   std::vector<size_t> wins(numOfReels());
+
   for (size_t f = 0; f < numOfFruit(); f++)
   {
     for (size_t i = 0; i < numOfReels(); i++)
@@ -98,13 +126,13 @@ double SlotGameParams::calcInTheoryRTP()
       {
         wins[i] *= reelsLength(i + 1) - tableOfProb[i + 1][f];
       }
-      theoreticalScore += (double)wins[i]/denominators[i];
+      theoreticalScore += wins[i]*(numOfComb/denominators[i]);
     }
   }
-  return theoreticalScore;
+  return std::make_pair(theoreticalScore, numOfComb);
 }
 
-double SlotGameParams::estimateRTP(size_t numOfStarts, unsigned seed)
+rational_t SlotGameParams::estimateRTP(size_t numOfStarts, unsigned seed)
 {
   std::default_random_engine generator(seed);
   std::vector<std::uniform_int_distribution<size_t>> distribution;
@@ -116,6 +144,7 @@ double SlotGameParams::estimateRTP(size_t numOfStarts, unsigned seed)
   {
     numOfStarts = numOfCombinations();
   }
+
   size_t randomStartsScore = 0;
   std::vector<size_t> tempComb(numOfReels());
   for (size_t i = 0; i < numOfStarts; i++)
@@ -126,10 +155,10 @@ double SlotGameParams::estimateRTP(size_t numOfStarts, unsigned seed)
     }
     randomStartsScore += winTable[tempComb[0] - 1][checkLine(tempComb) - 1];
   }
-  return (double)randomStartsScore / numOfStarts;
+  return std::make_pair(randomStartsScore, numOfStarts);
 }
 
-double SlotGameParams::calcPracticallyRTP()
+rational_t SlotGameParams::calcRTPBruteForce()
 {
   std::vector<size_t> line(numOfReels(), 0);
   size_t score = 0;
@@ -143,16 +172,14 @@ double SlotGameParams::calcPracticallyRTP()
     score += winTable[fruitLine[0] - 1][checkLine(fruitLine) - 1];
 
   } while (inc(line));
-  return (double)score / numOfCombinations();
+  return std::make_pair(score, numOfCombinations());
 }
 
-bool SlotGameParams::pointTest(std::vector<std::vector<size_t>> reels, std::vector<std::vector<size_t>> winTable, double realRTP)
+bool SlotGameParams::pointTest(reels_t reels, wins_t winTable, rational_t realRTP)
 {
   assert(reels.size() == (winTable[0]).size());
-  SlotGameParams SGP(reels.size(), winTable.size());
-  SGP.winTable.assign(winTable.begin(), winTable.end());
-  SGP.reels.assign(reels.begin(), reels.end());
-  return ((SGP.calcPracticallyRTP() - realRTP) < 0.00001);
+  SlotGameParams SGP(reels, winTable);
+  return ((SGP.calcRTPBruteForce() == realRTP));
 }
 
 SlotGameParams  SlotGameParams::randomReels(unsigned seed)
@@ -217,6 +244,17 @@ size_t SlotGameParams::numOfCombinations() const
   return numOfCombs;
 }
 
+SlotGameParams::SlotGameParams(SlotGameParams&& o)
+  : reels(std::move(o.reels))
+  , winTable(std::move(o.winTable))
+{}
+SlotGameParams &SlotGameParams::operator=(SlotGameParams &&o)
+{
+  reels = std::move(o.reels);
+  winTable = std::move(o.winTable);
+  return *this;
+}
+
 size_t checkLine(std::vector<size_t> const & line)
 {
   for (size_t i = 1; i < line.size(); i++)
@@ -230,12 +268,12 @@ size_t checkLine(std::vector<size_t> const & line)
 bool randomParamsTest(unsigned seed, size_t numOfStarts, std::string const &path)
 {
   auto sampleSlot1 = SlotGameParams::randomReels(seed);
-  //double calcPracticallyRTP =  sampleSlot1.calcPracticallyRTP();
-  double calcInTheoryRTP = sampleSlot1.calcInTheoryRTP();
-  double estimateRTP = sampleSlot1.estimateRTP(numOfStarts);
-  /*if (calcPracticallyRTP != calcInTheoryRTP)
+  //double calcRTPBruteForce =  sampleSlot1.calcRTPBruteForce();
+  rational_t calcRTPUsingFrequency = sampleSlot1.calcRTPUsingFrequency();
+  rational_t estimateRTP = sampleSlot1.estimateRTP(numOfStarts);
+  /*if (calcRTPBruteForce != calcRTPUsingFrequency)
   return false;*/
-  double percent = fabs(estimateRTP - calcInTheoryRTP) * 100 / calcInTheoryRTP;
+  double percent = fabs(1 - ((double)estimateRTP.first*calcRTPUsingFrequency.second / ((double)calcRTPUsingFrequency.first*estimateRTP.second))) * 100;
   if (path != "")
   {
     std::ofstream fout(path, std::ios::app);
@@ -244,7 +282,6 @@ bool randomParamsTest(unsigned seed, size_t numOfStarts, std::string const &path
       throw std::invalid_argument("Can not open file to write results. Check the path you entered:" + path + "\n");
     }
     fout << sampleSlot1.numOfCombinations() << " " << numOfStarts ;
-    fout << " " <<calcInTheoryRTP << " " << estimateRTP ;
     fout << " " << percent << std::endl;
   }
   else
