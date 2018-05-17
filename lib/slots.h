@@ -1,13 +1,6 @@
 #pragma once
 #include <vector>
 
-typedef struct testStruct
-{
-  std::vector<std::vector<size_t>> reels;
-  std::vector<std::vector<size_t>> winTable;
-  double realRTP;
-};
-
 class SlotGameParams
 {
   size_t numOfReels() const;
@@ -24,7 +17,7 @@ public:
   double calcInTheoryRTP();
   double estimateRTP(size_t numOfStarts, unsigned seed = 42);
   double calcPracticallyRTP();
-  static bool pointTest(testStruct& TS);
+  static bool pointTest(std::vector<std::vector<size_t>> reels, std::vector<std::vector<size_t>> winTable, double realRTP);
   static SlotGameParams randomReels(unsigned seed = 31);
 };
 

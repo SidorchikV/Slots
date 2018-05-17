@@ -146,13 +146,13 @@ double SlotGameParams::calcPracticallyRTP()
   return (double)score / numOfCombinations();
 }
 
-bool SlotGameParams::pointTest(testStruct & TS)
+bool SlotGameParams::pointTest(std::vector<std::vector<size_t>> reels, std::vector<std::vector<size_t>> winTable, double realRTP)
 {
-  assert(TS.reels.size() == (TS.winTable[0]).size());
-  SlotGameParams SGP(TS.reels.size(), TS.winTable.size());
-  SGP.winTable.assign(TS.winTable.begin(), TS.winTable.end());
-  SGP.reels.assign(TS.reels.begin(), TS.reels.end());
-  return ((SGP.calcPracticallyRTP() - TS.realRTP) < 0.00001);
+  assert(reels.size() == (winTable[0]).size());
+  SlotGameParams SGP(reels.size(), winTable.size());
+  SGP.winTable.assign(winTable.begin(), winTable.end());
+  SGP.reels.assign(reels.begin(), reels.end());
+  return ((SGP.calcPracticallyRTP() - realRTP) < 0.00001);
 }
 
 SlotGameParams  SlotGameParams::randomReels(unsigned seed)

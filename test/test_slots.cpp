@@ -5,22 +5,24 @@
 #include <chrono>
 #include <random>
 
-testStruct sampleTP1 = { {{ 1, 2, 4, 4, 3},{2, 3, 1, 2, 4, 3},{3, 2, 1, 4, 4, 2} }, 
-{ {1, 2, 7},{0, 1, 8},{0, 3, 6},{0, 2, 8} },
-0.983333 };
-testStruct sampleTP2 = { {{1,2,3},{2,3,3,1},{3,1,1,2} }, {{0,1,7},{0,1,9},{0,1,6}}, 46.0 / 48 };
-
 int main()
 {
   try
   {
-    std::cout << SlotGameParams::pointTest(sampleTP1) << std::endl;
-    std::cout << SlotGameParams::pointTest(sampleTP2) << std::endl;
+    std::vector<std::vector<size_t>> reels1 = { { 1, 2, 4, 4, 3 },{ 2, 3, 1, 2, 4, 3 },{ 3, 2, 1, 4, 4, 2 } };
+    std::vector<std::vector<size_t>> reels2 = { { 1,2,3 },{ 2,3,3,1 },{ 3,1,1,2 } };
+    std::vector<std::vector<size_t>> winTable1 = { { 1, 2, 7 },{ 0, 1, 8 },{ 0, 3, 6 },{ 0, 2, 8 } };
+    std::vector<std::vector<size_t>> winTable2 = { { 0,1,7 },{ 0,1,9 },{ 0,1,6 } };
+
+    std::cout << SlotGameParams::pointTest(reels1, winTable1, 0.983333) << std::endl;
+    std::cout << SlotGameParams::pointTest(reels2, winTable2, 46.0 / 48) << std::endl;
+
     std::string pathReels = "../reels.txt";
     std::string pathWinTable = "../winTable.txt";
     SlotGameParams sampleSlot(3, 4);
     sampleSlot.readWinTable(pathWinTable);
     sampleSlot.readReels(pathReels);
+
     std::cout << "\nCalculated Practically RTP : " << sampleSlot.calcPracticallyRTP();
     std::cout << "\nCalculated in theory RTP: " << sampleSlot.calcInTheoryRTP();
     for (int i = 0; i < 5; i++)
