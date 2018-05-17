@@ -48,17 +48,17 @@ void SlotGameParams::readWinTable(std::string const & pathWinTable)
   }
 }
 
-size_t SlotGameParams::numOfReels()
+size_t SlotGameParams::numOfReels() const
 {
   return reels.size();
 }
 
-size_t SlotGameParams::numOfFruit()
+size_t SlotGameParams::numOfFruit() const
 {
   return winTable.size();
 }
 
-size_t SlotGameParams::reelsLength(size_t i)
+size_t SlotGameParams::reelsLength(size_t i) const
 {
   assert(i < numOfReels());
   return reels[i].size();
@@ -207,7 +207,7 @@ bool SlotGameParams::inc(std::vector<size_t>& line)
   return (!isOverflow);
 }
 
-size_t SlotGameParams::numOfCombinations()
+size_t SlotGameParams::numOfCombinations() const
 {
   size_t numOfCombs = 1;
   for (size_t i = 0; i < numOfReels(); i++)
